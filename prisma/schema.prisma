@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ItemTier {
+  T0
+  T1
+  T1b
+  T2
+  T3
+}
+
+enum VerificationStatus {
+  DEVELOPING
+  TENTATIVE
+  CONTESTED
+  CONFIRMED
+}
+
+enum FeedbackSignal {
+  LIKE
+  SAVE
+  COMPLETE
+  MORE
+  LESS
+}
+
+enum ArtifactKind {
+  FLASHCARDS
+  MINDMAP
+  DOSSIER
+  READINGPATH
+}
+
+enum TaskType {
+  MATH_EXERCISE
+  TECH_SNIPPET
+  POLICY_PROMPT
+  LEARNING_PRACTICE
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  roles         String[]
+  nationality   String?
+  prefs         Json?
+  credits       Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  feedback      Feedback[]
+  rankingLogs   RankingLog[]
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token])
+}
+
+model Source {
+  id        String   @id @default(cuid())
+  url       String   @unique
+  type      String
+  title     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id            String        @id @default(cuid())
+  url           String        @unique
+  title         String?
+  sourceId      String
+  author        String?
+  publishedAt   DateTime?
+  lang          String?      @map("language")
+  tags          String[]     @default([])
+  text          String?      @db.Text
+  summaryText   String?      @db.Text
+  hash          String?      @unique
+  provenance    Json?
+  tier          ItemTier
+  status        VerificationStatus @default(DEVELOPING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  summary      Summary?
+  verification  Verification?
+  lenses        Lens[]
+  tasks         Task[]
+  artifacts     CreateArtifact[]
+  feedback      Feedback[]
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+model Summary {
+  id            String   @id @default(cuid())
+  itemId        String   @unique
+  headline      String
+  bullets       String[] @default([])
+  claims        Json
+  citations     Json
+  readingTime   Int
+  confidence    Float
+  unknowns      Json
+  microTaskId   String?
+  reflectionPrompt String?   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id                  String              @id @default(cuid())
+  itemId              String              @unique
+  claims              Json
+  evidence            Json
+  corroborationScore  Float
+  contradictions      Json
+  status              VerificationStatus
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model Lens {
+  id         String   @id @default(cuid())
+  itemId     String
+  lensType   String
+  payload    Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, lensType])
+}
+
+model Task {
+  id         String    @id @default(cuid())
+  itemId     String
+  type       TaskType
+  prompt     String    @db.Text
+  solution   String?   @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model CreateArtifact {
+  id        String       @id @default(cuid())
+  itemId    String
+  kind      ArtifactKind
+  title     String
+  data      Json
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model Feedback {
+  id        String          @id @default(cuid())
+  userId    String
+  itemId    String
+  signal    FeedbackSignal
+  value     Float?
+  note      String?         @db.Text
+  createdAt DateTime        @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, itemId])
+}
+
+model RankingLog {
+  id           String    @id @default(cuid())
+  userId       String?
+  slateId      String
+  itemIds      String[]  @default([])
+  propensities Float[]   @default([])
+  ts           DateTime  @default(now())
+  metadata     Json?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Policy {
+  id         String   @id @default(cuid())
+  name       String
+  params     Json
+  createdAt  DateTime @default(now())
+  createdBy  String?
+}
+

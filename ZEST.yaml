@@ -1,0 +1,216 @@
+meta:
+  name: OYB
+  date: "2025-10-17T18:45:00Z"
+  stack:
+    frontend: Next.js 15 + TailwindCSS + cmdk
+    backend: Next.js API routes + NextAuth + Prisma
+    jobs: BullMQ + Redis (planned)
+    db: PostgreSQL 16 + Prisma ORM
+    llm: Ollama-compatible community model (default phi3:mini)
+  decisions:
+    - Created Next.js app scaffold with App Router, Tailwind, and brand-forward layout.
+    - Using PostgreSQL cluster inside container for development.
+    - Integrated NextAuth with GitHub + magic link providers and Prisma adapter.
+    - Added offline ingestion fallbacks (curated scholarly/news samples) to satisfy no-network environments.
+    - Verification + summarization pipelines call an OSS Ollama endpoint when available; deterministic fallbacks cover offline mode.
+    - Added a preview script that couples `next dev` with auto-refreshing sample data on repository changes.
+    - Prioritized ≤4B OSS model lineup (Qwen, Gemma, Llama, SmolLM, Phi) with env-configurable fallback ordering and documented ingestion/community API routes.
+    - Persisting reflection prompts with each summary and removing binary assets to keep diffs text-only.
+    - Removed tracked favicon binary and tightened ignore rules so future PRs stay text-only.
+    - Targeted personalization scaffolding blends user-preferred topics with geodiverse news using nationality-aware weights and swipe guardrails.
+next_step: step-6
+steps:
+  - id: step-0
+    title: Foundation + ZEST tracking
+    goal: Establish repository baseline tracking and project metadata.
+    deliverables:
+      - ZEST.yaml committed with meta, steps, and open questions placeholders.
+      - Document initial technical decisions.
+    files:
+      - ZEST.yaml
+    commands:
+      - n/a
+    tests:
+      - n/a
+    acceptance: ZEST present and describes baseline decisions.
+    status: done
+  - id: step-1
+    title: Scaffold + Auth + Command Palette
+    goal: Set up Next.js app shell with authentication and command surface.
+    deliverables:
+      - Next.js app with Tailwind and layout basics.
+      - NextAuth configured with OAuth + magic link providers and Prisma adapter.
+      - Command palette using cmdk triggering core commands.
+    files:
+      - src/app/**/*
+      - src/components/**/*
+      - src/lib/auth/**/*
+      - src/styles/**/*
+    commands:
+      - npm install
+      - npm run dev
+    tests:
+      - npm run lint
+    acceptance: User can sign in/out locally and open palette with commands stubbed.
+    status: done
+  - id: step-2
+    title: Database + Prisma migrations
+    goal: Encode core data contracts via Prisma schema and SQL migrations.
+    deliverables:
+      - prisma/schema.prisma with models for User, Source, Item, Summary, Verification, Lens, Task, CreateArtifact, Feedback, RankingLog, Policy.
+      - Migration files applied to Postgres dev database.
+      - Seed script for baseline sources.
+    files:
+      - prisma/schema.prisma
+      - prisma/migrations/**/*
+      - prisma/seed.ts
+    commands:
+      - npx prisma migrate dev --name init
+      - npx prisma db seed
+    tests:
+      - prisma migrate check
+    acceptance: Database tables exist and seed completes.
+    status: done
+  - id: step-3
+    title: Ingestion v1 (papers + news + social)
+    goal: Fetch and normalize content from scholarly and news feeds with dedupe.
+    deliverables:
+      - Ingestion jobs and API endpoints to add/run ingest tasks.
+      - Support for at least arXiv and RSS news sources.
+      - Dedupe via URL canonicalization and text hashing.
+    files:
+      - src/jobs/**/*
+      - src/lib/ingest/**/*
+      - src/app/api/ingest/**/*
+    commands:
+      - npm run ingest:sample
+    tests:
+      - npm run ingest:sample (manual verification)
+    acceptance: Running sample ingest stores ≥1 scholarly & ≥1 news item.
+    status: done
+  - id: step-4
+    title: Verification engine v1
+    goal: Extract claims, gather evidence, compute corroboration score and status.
+    deliverables:
+      - Claim extraction + verification pipeline.
+      - Verification records with claims, evidence, contradictions, status.
+      - Badge logic for verification states.
+    files:
+      - src/lib/verification/**/*
+      - src/app/api/verify/**/*
+    commands:
+      - npm run verify:pending
+    tests:
+      - npm run verify:pending
+    acceptance: Items receive verification status & structured report.
+    status: done
+  - id: step-5
+    title: Summarizer + Context Lenses + micro-tasks
+    goal: LLM summarization with citations plus context lenses scaffolding.
+    deliverables:
+      - Summarization service with env-configurable LLM.
+      - Lens generator stubs for law/math/domain.
+      - Micro-task generation per item category.
+    files:
+      - src/lib/summarizer/**/*
+      - src/lib/lenses/**/*
+    commands:
+      - npm run summarize:pending
+    tests:
+      - npm run summarize:pending
+    acceptance: Items show summary, claims, tasks, optional lenses.
+    status: done
+  - id: step-5r
+    title: Community LLM integration + auto-refresh preview
+    goal: Replace proprietary LLM calls with an open-source alternative and ship an always-current preview workflow.
+    deliverables:
+      - Summarizer & verification claim extraction call an Ollama-compatible API with ≤4B OSS defaults (Qwen-first fallback list).
+      - README documents community model lineup, ingestion routes, and environment toggles.
+      - `npm run preview` script runs dev server + refreshes ingest data on file changes.
+    files:
+      - src/lib/summarizer.ts
+      - src/lib/verification.ts
+      - src/lib/models/community.ts
+      - scripts/preview.ts
+      - README.md
+      - package.json
+    commands:
+      - npm run preview
+    tests:
+      - npm run lint
+    acceptance: Local preview reflects OSS model defaults and stays up to date while editing.
+    status: done
+  - id: step-5p
+    title: Reflection prompts + personalization scaffolding
+    goal: Anchor summaries with reflection questions and seed nationality-aware ranking heuristics.
+    deliverables:
+      - Summaries persist reflection prompts surfaced on feed cards.
+      - User model tracks nationality for geodiversity planning.
+      - Ranking helper computes topic probabilities (~1 for liked topics) and geodiversity boosts using region tags.
+      - Swipe policy helper enforces periodic reflective cards for the Tinder-style browser.
+    files:
+      - prisma/schema.prisma
+      - prisma/migrations/**/*
+      - src/lib/summarizer.ts
+      - src/components/feed/item-card.tsx
+      - src/lib/ranking/**/*
+      - scripts/rank-train.ts
+      - README.md
+    commands:
+      - npm run summarize:pending
+      - npm run rank:train
+    tests:
+      - npm run lint
+    acceptance: Feed summaries show reflection prompts; rank:train logs a nationality-aware slate preview.
+    status: done
+  - id: step-6
+    title: Creation tools + Go-deeper
+    goal: Flashcards, mind-map, dossier scaffolds with go deeper sources.
+    deliverables:
+      - API endpoints + UI entry points for artifact creation.
+      - Data storage for CreateArtifact records.
+    files:
+      - src/app/(app)/create/**/*
+      - src/lib/create/**/*
+    commands:
+      - npm run test:create
+    tests:
+      - TBD
+    acceptance: Users can generate & view artifacts.
+    status: pending
+  - id: step-7
+    title: Embeddings + Diversifier + Bandit v1
+    goal: Compute embeddings, diversify feed, run contextual bandit ranking.
+    deliverables:
+      - Embedding pipeline using pgvector.
+      - Diversification + ranking functions with LinUCB/Thompson.
+      - Propensity logging.
+    files:
+      - src/lib/embeddings/**/*
+      - src/lib/ranking/**/*
+    commands:
+      - npm run rank:train
+    tests:
+      - npm run rank:evaluate
+    acceptance: Feed ordering uses bandit policy with verification-aware features.
+    status: pending
+  - id: step-8
+    title: Feedback loop + OPE + policy snapshot
+    goal: Capture feedback, run IPS/DR evaluation, manage policies.
+    deliverables:
+      - Feedback capture endpoints.
+      - Offline policy evaluation report.
+      - Snapshot/rollback commands.
+    files:
+      - src/app/api/feedback/**/*
+      - src/lib/policy/**/*
+    commands:
+      - npm run feedback:report
+    tests:
+      - npm run feedback:test
+    acceptance: Policies measurable & revertible.
+    status: pending
+artifacts: []
+open_questions:
+  - How to best source independent verification evidence under rate limits without paid APIs?
+  - Which provider to use for production-grade magic link delivery (Resend vs custom SMTP)?
