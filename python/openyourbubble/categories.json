@@ -1,0 +1,42 @@
+[
+  {"slug": "world", "label": "World & Geopolitics", "group": "global", "parents": [], "tags": ["diplomacy", "conflict", "policy"]},
+  {"slug": "world-europe", "label": "Europe Focus", "group": "global", "parents": ["world"], "tags": ["eu", "regulation", "democracy"]},
+  {"slug": "world-asia", "label": "Asia Focus", "group": "global", "parents": ["world"], "tags": ["china", "india", "trade"]},
+  {"slug": "world-africa", "label": "Africa Focus", "group": "global", "parents": ["world"], "tags": ["development", "governance"]},
+  {"slug": "world-americas", "label": "Americas Focus", "group": "global", "parents": ["world"], "tags": ["us", "latam", "policy"]},
+
+  {"slug": "economy", "label": "Economy & Markets", "group": "economy", "parents": [], "tags": ["inflation", "markets", "jobs"]},
+  {"slug": "economy-fintech", "label": "Financial Technology", "group": "economy", "parents": ["economy"], "tags": ["banking", "payments", "crypto"], "professional": true},
+  {"slug": "economy-climate", "label": "Climate Finance", "group": "economy", "parents": ["economy"], "tags": ["sustainability", "carbon", "transition"], "professional": true},
+
+  {"slug": "health", "label": "Health & Life Sciences", "group": "science", "parents": [], "tags": ["public health", "biotech", "care"]},
+  {"slug": "health-mental", "label": "Mental Health", "group": "science", "parents": ["health"], "tags": ["wellbeing", "therapy"]},
+  {"slug": "health-research", "label": "Medical Research", "group": "science", "parents": ["health"], "tags": ["clinical", "innovation"], "professional": true},
+  {"slug": "health-nutrition", "label": "Nutrition & Preventive Health", "group": "science", "parents": ["health"], "tags": ["nutrition", "prevention", "wellness"]},
+  {"slug": "health-systems", "label": "Health Systems & Policy", "group": "science", "parents": ["health"], "tags": ["policy", "care delivery"], "professional": true},
+
+  {"slug": "technology", "label": "Technology & AI", "group": "innovation", "parents": [], "tags": ["software", "ai", "chips"]},
+  {"slug": "technology-policy", "label": "Tech Policy", "group": "innovation", "parents": ["technology"], "tags": ["regulation", "privacy"], "professional": true},
+  {"slug": "technology-open", "label": "Open Tech & Standards", "group": "innovation", "parents": ["technology"], "tags": ["open source", "standards"]},
+  {"slug": "technology-hardware", "label": "Hardware & Manufacturing", "group": "innovation", "parents": ["technology"], "tags": ["hardware", "supply chain"], "professional": true},
+
+  {"slug": "culture", "label": "Culture & Ideas", "group": "society", "parents": [], "tags": ["arts", "identity", "media"]},
+  {"slug": "culture-language", "label": "Languages & Words", "group": "society", "parents": ["culture"], "tags": ["linguistics", "translation"]},
+  {"slug": "culture-words", "label": "Words & Rhetoric", "group": "society", "parents": ["culture"], "tags": ["rhetoric", "etymology", "storytelling"]},
+  {"slug": "culture-people", "label": "People & Leadership", "group": "society", "parents": ["culture"], "tags": ["biography", "communities"]},
+  {"slug": "culture-media", "label": "Media Literacy", "group": "society", "parents": ["culture"], "tags": ["misinformation", "audience"], "professional": true},
+
+  {"slug": "science", "label": "Research & Discovery", "group": "science", "parents": [], "tags": ["physics", "space", "biology"]},
+  {"slug": "science-space", "label": "Space", "group": "science", "parents": ["science"], "tags": ["missions", "astronomy"]},
+  {"slug": "science-energy", "label": "Energy Systems", "group": "science", "parents": ["science"], "tags": ["grid", "storage", "fusion"], "professional": true},
+
+  {"slug": "civic", "label": "Civic Life", "group": "society", "parents": [], "tags": ["cities", "governance", "infrastructure"]},
+  {"slug": "education", "label": "Education & Study", "group": "society", "parents": ["civic"], "tags": ["learning", "schools"]},
+  {"slug": "education-edtech", "label": "EdTech & Methods", "group": "society", "parents": ["education"], "tags": ["pedagogy", "platforms"], "professional": true},
+  {"slug": "education-lifelong", "label": "Lifelong Learning", "group": "society", "parents": ["education"], "tags": ["adult learning", "microcredentials"]},
+
+  {"slug": "creative", "label": "Creative Economy", "group": "economy", "parents": [], "tags": ["design", "media", "gaming"], "professional": true},
+  {"slug": "economy-cooperatives", "label": "Cooperatives & Solidarity", "group": "economy", "parents": ["economy"], "tags": ["co-ops", "mutual aid"], "professional": false},
+  {"slug": "climate", "label": "Climate & Environment", "group": "science", "parents": [], "tags": ["adaptation", "nature", "policy"]},
+  {"slug": "justice", "label": "Justice & Rights", "group": "society", "parents": [], "tags": ["law", "equity", "rights"]}
+]

@@ -9,8 +9,17 @@ export type NormalizedItem = {
   language?: string;
   tags: string[];
   text: string;
+  originalText?: string;
   tier: ItemTier;
   provenance: Prisma.JsonValue;
+  keywords?: string[];
+  translationProvider?: string;
+  contextSummary?: string;
+  contextBullets?: string[];
+  studyPrompts?: string[];
+  channels?: string[];
+  excerpt?: string;
+  contextMetadata?: Prisma.JsonValue;
 };
 
 export type IngestResult = {

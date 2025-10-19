@@ -12,16 +12,24 @@ async function run() {
       url: "https://export.arxiv.org/api/query?search_query=cat:cs.AI&max_results=2&sortBy=lastUpdatedDate&sortOrder=descending",
       type: "arxiv",
       title: "arXiv CS.AI latest",
+      metadata: { countryCode: "GLOBAL", primaryLanguage: "en" },
     },
     {
       url: "https://feeds.npr.org/1001/rss.xml",
       type: "rss",
       title: "NPR News",
+      metadata: { countryCode: "US", primaryLanguage: "en" },
+    },
+    {
+      url: "https://www.tagesschau.de/xml/rss2/",
+      type: "rss",
+      title: "Tagesschau Politik",
+      metadata: { countryCode: "DE", primaryLanguage: "de" },
     },
   ];
 
   for (const source of sources) {
-    const ensured = await ensureSource(source.url, source.type, source.title);
+    const ensured = await ensureSource(source.url, source.type, source.title, source.metadata);
     const result = await ingestSource(ensured.id);
     logger.info({ source: source.url, result }, "sample-ingest");
     for (const itemId of result.itemIds) {
