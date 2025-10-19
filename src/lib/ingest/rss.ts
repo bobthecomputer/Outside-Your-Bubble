@@ -1,13 +1,12 @@
 import { XMLParser } from "fast-xml-parser";
 import type { Source } from "@prisma/client";
-import { extract } from "@extractus/article-extractor";
 import { NormalizedItem } from "./types";
-import { canonicalizeUrl, inferRegionTag } from "./utils";
+import { canonicalizeUrl } from "./utils";
 import { rssSample } from "./sample-data";
 import { logger } from "@/lib/logger";
+import { scrapeArticle, normalizeScrapedItem } from "./scraper";
 
 const parser = new XMLParser({ ignoreAttributes: false, removeNSPrefix: true });
-
 interface RssCategoryValue {
   '#text'?: string;
 }
@@ -66,11 +65,19 @@ export async function fetchRssItems(source: Source): Promise<NormalizedItem[]> {
     const url = linkField ?? guidField;
     if (!url) continue;
     const canonicalUrl = canonicalizeUrl(url);
-    const description = ensureString(entry.description) ?? ensureString(entry.summary) ?? "";
-    const content = await extract(canonicalUrl).catch(() => null);
-    const text = content?.content ?? description;
+    const scrape = await scrapeArticle(canonicalUrl, {
+      languageHint: ensureString(parsed.rss?.channel?.language) ?? source.primaryLanguage ?? source.title,
+      via: "rss",
+    });
+    if (!scrape) {
+      continue;
+    }
 
-    if (!text) continue;
+    const normalized = await normalizeScrapedItem(scrape, {
+      id: source.id,
+      type: source.type,
+      url: source.url,
+    });
 
     const tags: string[] = Array.isArray(entry.category)
       ? (entry.category as Array<string | RssCategoryValue>)
@@ -85,25 +92,13 @@ export async function fetchRssItems(source: Source): Promise<NormalizedItem[]> {
           ? [entry.category as string]
           : [];
 
-    const regionTag = inferRegionTag(source.url);
-    if (regionTag && !tags.includes(regionTag)) {
-      tags.push(regionTag);
-    }
+    const mergedTags = new Set<string>([...normalized.tags, ...tags]);
 
     items.push({
-      source: { id: source.id, type: source.type, url: source.url },
-      url: canonicalUrl,
-      title: ensureString(entry.title) ?? "Untitled article",
+      ...normalized,
       author: ensureString(entry.author) ?? ensureString(entry["dc:creator"]) ?? undefined,
       publishedAt: entry.pubDate ? new Date(entry.pubDate) : undefined,
-      language: parsed.rss?.channel?.language ?? "en",
-      tags,
-      text,
-      tier: "T2",
-      provenance: {
-        tier: "T2",
-        provider: source.url,
-      },
+      tags: Array.from(mergedTags),
     });
   }
 

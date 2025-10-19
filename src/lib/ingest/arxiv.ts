@@ -3,6 +3,7 @@ import type { Source } from "@prisma/client";
 import { extract } from "@extractus/article-extractor";
 import { NormalizedItem } from "./types";
 import { canonicalizeUrl, inferRegionTag } from "./utils";
+import { extractKeywords } from "./novelty";
 import { arxivSample } from "./sample-data";
 import { logger } from "@/lib/logger";
 
@@ -92,6 +93,8 @@ export async function fetchArxivItems(source: Source): Promise<NormalizedItem[]>
       baseTags.push(regionTag);
     }
 
+    const keywords = extractKeywords(text, 25);
+
     items.push({
       source: { id: source.id, type: source.type, url: source.url },
       url: canonicalUrl,
@@ -101,6 +104,7 @@ export async function fetchArxivItems(source: Source): Promise<NormalizedItem[]>
       language: "en",
       tags: baseTags,
       text,
+      keywords,
       tier: "T1b",
       provenance: {
         tier: "T1b",

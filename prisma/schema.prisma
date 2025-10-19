@@ -60,6 +60,11 @@ model User {
   sessions      Session[]
   feedback      Feedback[]
   rankingLogs   RankingLog[]
+  preferences   UserPrefs?
+  achievements  Achievement[]
+  learningPaths LearningPath[]
+  events        Event[]
+  sharedStories SharedStory[]
 }
 
 model Account {
@@ -111,6 +116,8 @@ model Source {
   type      String
   title     String?
   active    Boolean  @default(true)
+  countryCode String?
+  primaryLanguage String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   items     Item[]
@@ -123,14 +130,25 @@ model Item {
   sourceId      String
   author        String?
   publishedAt   DateTime?
+  topicId       String?
   lang          String?      @map("language")
   tags          String[]     @default([])
   text          String?      @db.Text
+  originalText  String?      @db.Text
   summaryText   String?      @db.Text
+  excerpt       String?      @db.Text
   hash          String?      @unique
   provenance    Json?
   tier          ItemTier
   status        VerificationStatus @default(DEVELOPING)
+  noveltyScore  Float?
+  noveltyAngles String[] @default([])
+  translationProvider String?
+  contextSummary String?      @db.Text
+  contextBullets String[]     @default([])
+  studyPrompts   String[]     @default([])
+  contextMetadata Json?
+  channels       String[]     @default([])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   summary      Summary?
@@ -139,8 +157,11 @@ model Item {
   tasks         Task[]
   artifacts     CreateArtifact[]
   feedback      Feedback[]
+  deckCards     DeckCard[]
+  sharedStories SharedStory[]
 
   source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  topic  Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
 }
 
 model Summary {
@@ -245,5 +266,116 @@ model Policy {
   params     Json
   createdAt  DateTime @default(now())
   createdBy  String?
+}
+
+model Topic {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  label     String
+  group     String   @default("general")
+  subcategory String?
+  tags      String[] @default([])
+  professional Boolean @default(false)
+  randomEligible Boolean @default(true)
+  defaultMode String   @default("quen-3.4b")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+  deckCards DeckCard[]
+  learningPaths LearningPath[]
+}
+
+model DeckCard {
+  id        String   @id @default(cuid())
+  itemId    String
+  topicId   String?
+  reason    String
+  rank      Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  item  Item  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  topic Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+}
+
+model LearningPath {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String?
+  status    String   @default("active")
+  required  Int      @default(5)
+  progress  Int      @default(0)
+  steps     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  userId    String?
+  name      String
+  ts        DateTime @default(now())
+  payload   Json
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, ts])
+}
+
+model UserPrefs {
+  userId     String   @id
+  locale     String?
+  quietHours Json?
+  topicsLiked Json?
+  topicsMuted Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String
+  earnedAt  DateTime @default(now())
+  metadata  Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, code])
+}
+
+model SharedStory {
+  id         String   @id @default(cuid())
+  userId     String?
+  itemId     String?
+  sourceUrl  String?
+  title      String
+  summary    String?  @db.Text
+  status     String   @default("pending")
+  audience   String   @default("beta")
+  partnerTargets String[] @default([])
+  tags       String[] @default([])
+  noveltyAngle String?
+  contextSummary String? @db.Text
+  studyPrompts   String[] @default([])
+  channels       String[] @default([])
+  originalLanguage String?
+  translationProvider String?
+  metadata    Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  item Item? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
 }
 

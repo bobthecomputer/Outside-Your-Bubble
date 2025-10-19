@@ -15,7 +15,13 @@ function runIngest() {
   return child;
 }
 
-const devServer = spawn(npmCommand, ["run", "dev"], {
+const extraArgs = process.argv.slice(2);
+const devArgs = ["run", "dev"];
+if (extraArgs.length > 0) {
+  devArgs.push("--", ...extraArgs);
+}
+
+const devServer = spawn(npmCommand, devArgs, {
   cwd: repoRoot,
   stdio: "inherit",
   env: process.env,

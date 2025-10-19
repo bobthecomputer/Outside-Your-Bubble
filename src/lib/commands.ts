@@ -11,8 +11,13 @@ async function handleIngestSample() {
       "https://export.arxiv.org/api/query?search_query=cat:cs.AI&max_results=2&sortBy=lastUpdatedDate&sortOrder=descending",
       "arxiv",
       "arXiv CS.AI latest",
+      { countryCode: "GLOBAL", primaryLanguage: "en" },
     ),
-    ensureSource("https://feeds.npr.org/1001/rss.xml", "rss", "NPR News"),
+    ensureSource("https://feeds.npr.org/1001/rss.xml", "rss", "NPR News", { countryCode: "US", primaryLanguage: "en" }),
+    ensureSource("https://www.tagesschau.de/xml/rss2/", "rss", "Tagesschau Politik", {
+      countryCode: "DE",
+      primaryLanguage: "de",
+    }),
   ]);
 
   let processed = 0;

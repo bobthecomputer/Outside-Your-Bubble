@@ -26,6 +26,16 @@
 # avoid committing binary assets; keep repo text-friendly for reviews
 *.ico
 *.png
+data/
+
+# python
+__pycache__/
+*.py[cod]
+python/.venv/
+.venv/
+python/dist/
+python/build/
+python/*.egg-info/
 
 # debug
 npm-debug.log*

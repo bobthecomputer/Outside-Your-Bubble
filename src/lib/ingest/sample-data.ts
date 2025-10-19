@@ -16,6 +16,7 @@ export const arxivSample: Omit<NormalizedItem, "source"> = {
     provider: "arXiv",
     note: "Offline sample (network fallback)",
   } satisfies Prisma.JsonValue,
+  keywords: ["adaptive", "alignment", "bandit", "uncertainty", "serendipitous"],
 };
 
 export const rssSample: Omit<NormalizedItem, "source"> = {
@@ -33,4 +34,5 @@ export const rssSample: Omit<NormalizedItem, "source"> = {
     provider: "OYB sample newsroom",
     note: "Offline sample (network fallback)",
   } satisfies Prisma.JsonValue,
+  keywords: ["european", "pilot", "disclosures", "verification", "providers"],
 };
