@@ -1,53 +1,13 @@
 import { randomUUID } from "crypto";
-import type {
-  DeckCard as DeckCardModel,
-  Item,
-  ItemTier,
-  Source,
-  Summary,
-  Topic,
-} from "@prisma/client";
+import type { DeckCard as DeckCardModel, Item, Source, Summary, Topic } from "@prisma/client";
+import type { DeckCardView, SwipeAction } from "@/types/deck";
 import { prisma } from "./prisma";
 import { normalizeSummaryCitations } from "./citations";
 import { logger } from "./logger";
-import type { NormalizedCitation } from "./citations";
 import { awardAchievement } from "./achievements";
 import { recordEvent } from "./events";
 
-export type DeckCardReason = string;
-
-export type DeckCardView = {
-  cardId: string;
-  itemId: string;
-  headline: string;
-  summary: string;
-  bullets: string[];
-  reason: DeckCardReason;
-  tier: ItemTier;
-  rank: number;
-  topic?: { id: string; slug: string; label: string } | null;
-  topicDetails?: {
-    slug: string;
-    label: string;
-    group: string;
-    subcategory?: string | null;
-    tags: string[];
-    professional: boolean;
-    defaultMode: string;
-  } | null;
-  publishedAt?: string;
-  source: { title?: string | null; url: string; countryCode?: string | null; language?: string | null };
-  citations: NormalizedCitation[];
-  regionTag?: string | null;
-  excerpt?: string | null;
-  contextSummary?: string | null;
-  contextBullets: string[];
-  studyPrompts: string[];
-  channels: string[];
-  translationProvider?: string | null;
-  language?: string | null;
-  contextMetadata?: Record<string, unknown> | null;
-};
+export type { DeckCardReason, DeckCardView, SwipeAction } from "@/types/deck";
 
 const DEFAULT_DECK_LIMIT = 12;
 const MAX_PER_TOPIC = 3;
@@ -318,8 +278,6 @@ export async function buildDeck(options: { userId?: string; limit?: number; ip?:
 
   return deduped;
 }
-
-export type SwipeAction = "left" | "right" | "up" | "down";
 
 function actionDelta(action: SwipeAction): number {
   switch (action) {

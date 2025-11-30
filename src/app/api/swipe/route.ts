@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { recordSwipe, type SwipeAction } from "@/lib/deck";
+import { recordSwipe } from "@/lib/deck";
+import type { SwipeAction } from "@/types/deck";
 import { logger } from "@/lib/logger";
 import { applyRateLimit } from "@/lib/security/rate-limit";
 import { buildRateLimitKey, getClientIp } from "@/lib/security/request";
