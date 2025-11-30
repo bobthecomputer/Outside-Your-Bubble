@@ -36,3 +36,5 @@
 - 2025-11-30: Added this progress tracker, preserved the provided UI concept in `docs/ui-prototype.md`, and documented contributor agreements for keeping objectives current.
 - 2025-11-30: Captured a concrete roadmap in `docs/roadmap.md` (deck refactor steps, testing approach, rate limiting, onboarding) and aligned follow-ups to execute against it.
 - 2025-12-01: Linked progress to the roadmap explicitly, refreshed contributor guidance, and added onboarding assets (.env example, Docker Compose, getting-started guide) plus a follow-up to validate them.
+- 2026-01-09: Added Vitest as the testing harness and wrote normalization specs for `normalizeSummaryCitations` to start covering ingestion/summary utilities; follow-up to extend coverage to ranking and deck helpers.
+- 2026-01-10: Hardened ingestion by adding external extractor fallbacks (Jina reader + configurable article API), refreshed env docs, and covered extractor selection with Vitest.

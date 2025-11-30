@@ -35,7 +35,7 @@ Local-first intelligence briefings for people who want to stretch beyond their u
 
    - `DATABASE_URL` – PostgreSQL connection string.
    - `NEXTAUTH_SECRET` – e.g. `openssl rand -base64 32`.
-   - Optional toggles: `INGEST_TRANSLATE=true` to enable the local translator bridge, `BETA_SHARE_ENABLED` / `NEXT_PUBLIC_BETA_SHARE_ENABLED` for the partner pitch beta, and mesh settings (`MESH_STORAGE_PATH`, `MESH_PEERS`, `MESH_SECRET`).
+   - Optional toggles: `INGEST_TRANSLATE=true` to enable the local translator bridge, `INGEST_ENABLE_JINA_READER=false` to opt out of the built-in markdown fallback, `INGEST_ARTICLE_API_URL` / `INGEST_ARTICLE_API_KEY` for a paid extractor endpoint, `BETA_SHARE_ENABLED` / `NEXT_PUBLIC_BETA_SHARE_ENABLED` for the partner pitch beta, and mesh settings (`MESH_STORAGE_PATH`, `MESH_PEERS`, `MESH_SECRET`).
 
 3. **Database**
 

@@ -20,7 +20,9 @@ export type ScrapeChannels =
   | "amphtml"
   | "microformats"
   | "alternate-feed"
-  | "fallback";
+  | "fallback"
+  | "jina-reader"
+  | "external-api";
 
 type StructuredMetadata = {
   title?: string;
@@ -58,6 +60,20 @@ type ScrapeResult = {
   studyPrompts?: string[];
   channels: ScrapeChannels[];
   structuredMetadata: StructuredMetadata;
+};
+
+type ExternalExtractorResult = {
+  title?: string;
+  text?: string;
+  excerpt?: string;
+  metadata?: StructuredMetadata;
+  channel: ScrapeChannels;
+};
+
+type ExternalExtractor = {
+  name: string;
+  enabled: boolean;
+  run: (url: string) => Promise<ExternalExtractorResult | null>;
 };
 
 function ensureSentenceArray(text: string, limit = 3): string[] {
@@ -309,6 +325,107 @@ function buildContextSummary(text: string, metadata: StructuredMetadata): { summ
   return { summary, bullets };
 }
 
+function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs = 10_000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeout));
+}
+
+function buildJinaReaderExtractor(): ExternalExtractor {
+  return {
+    name: "jina-reader",
+    enabled: process.env.INGEST_ENABLE_JINA_READER !== "false",
+    run: async (targetUrl: string) => {
+      const jinaUrl = `https://r.jina.ai/http://${targetUrl.replace(/^https?:\/\//, "")}`;
+      try {
+        const response = await fetchWithTimeout(jinaUrl, {
+          headers: { "user-agent": USER_AGENT, accept: "text/plain" },
+        });
+        if (!response.ok) return null;
+        const markdown = await response.text();
+        const headingMatch = markdown.match(/^#\s+(.+)$/m);
+        const title = headingMatch?.[1]?.trim();
+        const text = markdown.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+        const excerptMatch = markdown.match(/^>\s+(.+)$/m);
+        const excerpt = excerptMatch?.[1]?.trim();
+        if (!text || text.length < 180) {
+          return null;
+        }
+        return { title, text, excerpt, channel: "jina-reader" } satisfies ExternalExtractorResult;
+      } catch (error) {
+        logger.debug({ error, url: targetUrl }, "ingest:scraper-jina-error");
+        return null;
+      }
+    },
+  } satisfies ExternalExtractor;
+}
+
+function buildExternalApiExtractor(): ExternalExtractor {
+  const endpoint = process.env.INGEST_ARTICLE_API_URL;
+  return {
+    name: "external-api",
+    enabled: Boolean(endpoint),
+    run: async (targetUrl: string) => {
+      if (!endpoint) return null;
+      const resolved = endpoint.includes("{url}")
+        ? endpoint.replace("{url}", encodeURIComponent(targetUrl))
+        : `${endpoint}${endpoint.includes("?") ? "&" : "?"}url=${encodeURIComponent(targetUrl)}`;
+      const headers: Record<string, string> = {
+        "user-agent": USER_AGENT,
+        accept: "application/json, text/plain",
+      };
+      if (process.env.INGEST_ARTICLE_API_KEY) {
+        headers.authorization = `Bearer ${process.env.INGEST_ARTICLE_API_KEY}`;
+      }
+      try {
+        const response = await fetchWithTimeout(resolved, { headers });
+        if (!response.ok) return null;
+        const contentType = response.headers.get("content-type") ?? "";
+        if (contentType.includes("json")) {
+          const data = (await response.json()) as Record<string, unknown>;
+          const contentField = typeof data.content === "string" ? data.content : undefined;
+          const text = (typeof data.text === "string" ? data.text : contentField ?? "").replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (!text || text.length < 180) return null;
+          return {
+            title: typeof data.title === "string" ? data.title : undefined,
+            text,
+            excerpt: typeof data.excerpt === "string" ? data.excerpt : undefined,
+            channel: "external-api",
+            metadata: {
+              siteName: typeof data.siteName === "string" ? data.siteName : undefined,
+              tags: Array.isArray(data.tags) ? (data.tags as unknown[]).filter((t): t is string => typeof t === "string") : [],
+            },
+          } satisfies ExternalExtractorResult;
+        }
+        const plainText = (await response.text()).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+        if (!plainText || plainText.length < 180) return null;
+        return { text: plainText, channel: "external-api" } satisfies ExternalExtractorResult;
+      } catch (error) {
+        logger.debug({ error, url: targetUrl }, "ingest:scraper-external-api-error");
+        return null;
+      }
+    },
+  } satisfies ExternalExtractor;
+}
+
+export function getExternalExtractors(): ExternalExtractor[] {
+  const extractors = [buildJinaReaderExtractor(), buildExternalApiExtractor()];
+  return extractors.filter((extractor) => extractor.enabled);
+}
+
+export async function scrapeWithExternalExtractors(url: string): Promise<ExternalExtractorResult | null> {
+  const extractors = getExternalExtractors();
+  for (const extractor of extractors) {
+    const result = await extractor.run(url);
+    if (result?.text && result.text.length >= 180) {
+      return result;
+    }
+  }
+  return null;
+}
+
 function buildStudyPrompts(keywords: string[], metadata: StructuredMetadata): string[] {
   const trimmed = keywords.slice(0, 5);
   const prompts = new Set<string>();
@@ -417,22 +534,33 @@ export async function scrapeArticle(
       const docTags = metadataTags.filter(Boolean);
       const combinedTags = new Set<string>(docTags);
       if (regionTag) combinedTags.add(regionTag);
-      const metadata: StructuredMetadata = {
+      let metadata: StructuredMetadata = {
         ...merged,
         tags: Array.from(combinedTags),
         alternateFeeds,
         ampUrl: merged.ampUrl,
         oEmbed,
       };
-      const { summary, bullets } = text ? buildContextSummary(text, metadata) : { summary: undefined, bullets: [] };
-      const keywords = text ? extractKeywords(text, 30) : [];
 
-      const studyPrompts = keywords.length ? buildStudyPrompts(keywords, metadata) : [];
+      if (!text || text.length < 240) {
+        const external = await scrapeWithExternalExtractors(canonicalUrl);
+        if (external?.text) {
+          text = external.text;
+          title = title ?? external.title;
+          excerpt = excerpt ?? external.excerpt;
+          metadata = mergeMetadata(metadata, external.metadata ?? {});
+          addChannel(external.channel);
+        }
+      }
 
       if (!text || text.length < 240) {
         logger.debug({ url: canonicalUrl }, 'ingest:scraper-insufficient-text');
         return null;
       }
+
+      const keywords = extractKeywords(text, 30);
+      const { summary, bullets } = buildContextSummary(text, metadata);
+      const studyPrompts = keywords.length ? buildStudyPrompts(keywords, metadata) : [];
 
       const languageDetection = detectLanguage(text, options.languageHint ?? metadata.siteName);
       let language = languageDetection.code ?? normalizeLanguageCode(options.languageHint) ?? 'en';
@@ -485,12 +613,6 @@ export async function scrapeArticle(
     }
     if (!html) return null;
     const dom = new JSDOM(html, { url: canonicalUrl });
-    const bodyText = dom.window.document.body?.textContent?.replace(/\s+/g, ' ').trim();
-    if (!bodyText || bodyText.length < 240) {
-      return null;
-    }
-    text = bodyText;
-    addChannel('fallback');
     const metadataChannels: ScrapeChannels[] = [];
     const meta = extractMeta(dom.window.document, metadataChannels);
     const jsonld = extractJsonLd(dom.window.document, metadataChannels);
@@ -498,7 +620,24 @@ export async function scrapeArticle(
     const microformats = extractMicroformats(dom.window.document, metadataChannels);
     const oEmbed = await fetchOEmbed(dom.window.document, canonicalUrl, metadataChannels);
     metadataChannels.forEach(addChannel);
-    const merged = mergeMetadata(
+
+    const bodyText = dom.window.document.body?.textContent?.replace(/\s+/g, ' ').trim();
+    const externalFallback = !bodyText || bodyText.length < 240 ? await scrapeWithExternalExtractors(canonicalUrl) : null;
+
+    text = externalFallback?.text ?? bodyText;
+    if (externalFallback) {
+      title = title ?? externalFallback.title;
+      excerpt = excerpt ?? externalFallback.excerpt;
+      addChannel(externalFallback.channel);
+    } else {
+      addChannel('fallback');
+    }
+
+    if (!text || text.length < 240) {
+      return null;
+    }
+
+    let merged = mergeMetadata(
       {
         ...jsonld,
         alternateFeeds,
@@ -509,6 +648,9 @@ export async function scrapeArticle(
       },
       meta,
     );
+    if (externalFallback?.metadata) {
+      merged = mergeMetadata(merged, externalFallback.metadata);
+    }
     title = title ?? merged.title ?? dom.window.document.title ?? 'Untitled article';
     excerpt = excerpt ?? merged.excerpt;
     const metadataTags = merged.tags ?? [];
