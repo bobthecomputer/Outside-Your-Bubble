@@ -149,6 +149,9 @@ model Item {
   studyPrompts   String[]     @default([])
   contextMetadata Json?
   channels       String[]     @default([])
+  qualityScore   Float?
+  qualityVerdict String?
+  qualityReasons String[]     @default([])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   summary      Summary?
