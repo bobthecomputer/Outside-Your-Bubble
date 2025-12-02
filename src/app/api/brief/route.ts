@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { buildMorningBrief } from "@/lib/brief";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey } from "@/lib/security/request";
 
 export async function GET(request: Request) {
   const key = buildRateLimitKey(request, "brief:get");
-  const rate = applyRateLimit(key, 60_000, 20);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many brief requests" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(key, 60_000, 20);
+  const limited = rateLimitExceededResponse(rate, "Too many brief requests");
+  if (limited) {
+    return limited;
   }
 
   const url = new URL(request.url);

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { submitSharedStory } from "@/lib/share";
 import { prisma } from "@/lib/prisma";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey, getClientIp } from "@/lib/security/request";
 import { logger } from "@/lib/logger";
 
@@ -37,12 +37,10 @@ export async function POST(request: Request) {
   }
 
   const ip = getClientIp(request);
-  const rate = applyRateLimit(buildRateLimitKey(request, "share:submit"), 60 * 60 * 1000, 10);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many submissions" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 3600) } },
-    );
+  const rate = await applyRateLimit(buildRateLimitKey(request, "share:submit"), 60 * 60 * 1000, 10);
+  const limited = rateLimitExceededResponse(rate, "Too many submissions");
+  if (limited) {
+    return limited;
   }
 
   let payload: z.infer<typeof shareSchema>;
@@ -58,12 +56,10 @@ export async function POST(request: Request) {
   const userId = session?.user?.id;
 
   if (!userId) {
-    const anonRate = applyRateLimit(buildRateLimitKey(request, "share:anon"), 60 * 60 * 1000, 3);
-    if (!anonRate.success) {
-      return NextResponse.json(
-        { message: "Login required for additional submissions" },
-        { status: 429, headers: { "Retry-After": String(anonRate.retryAfter ?? 3600) } },
-      );
+    const anonRate = await applyRateLimit(buildRateLimitKey(request, "share:anon"), 60 * 60 * 1000, 3);
+    const anonLimited = rateLimitExceededResponse(anonRate, "Login required for additional submissions");
+    if (anonLimited) {
+      return anonLimited;
     }
   }
 

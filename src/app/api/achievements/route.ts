@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey } from "@/lib/security/request";
 
 export async function GET(request: Request) {
-  const rate = applyRateLimit(buildRateLimitKey(request, "achievements:get"), 60_000, 30);
-  if (!rate.success) {
-    return NextResponse.json(
-      { achievements: [], message: "Too many achievement requests" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(buildRateLimitKey(request, "achievements:get"), 60_000, 30);
+  const limited = rateLimitExceededResponse(rate, "Too many achievement requests");
+  if (limited) {
+    return limited;
   }
 
   const session = await auth();

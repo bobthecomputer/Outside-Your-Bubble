@@ -4,7 +4,7 @@ import { updateLearningProgress } from "@/lib/learning";
 import { logger } from "@/lib/logger";
 import { recordEvent } from "@/lib/events";
 import { getClientIp, buildRateLimitKey } from "@/lib/security/request";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 
 type StepStatus = "seen" | "done" | "skipped";
 
@@ -14,12 +14,10 @@ function isStepStatus(value: unknown): value is StepStatus {
 
 export async function POST(request: Request) {
   const rateKey = buildRateLimitKey(request, "learning:progress");
-  const rate = applyRateLimit(rateKey, 60_000, 60);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many progress updates" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(rateKey, 60_000, 60);
+  const limited = rateLimitExceededResponse(rate, "Too many progress updates");
+  if (limited) {
+    return limited;
   }
 
   const session = await auth();

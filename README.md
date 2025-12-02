@@ -33,8 +33,9 @@ Local-first intelligence briefings for people who want to stretch beyond their u
 
    Minimal local variables:
 
-   - `DATABASE_URL` – PostgreSQL connection string.
-   - `NEXTAUTH_SECRET` – e.g. `openssl rand -base64 32`.
+   - `DATABASE_URL` - PostgreSQL connection string.
+   - `NEXTAUTH_SECRET` - e.g. `openssl rand -base64 32`.
+   - `REDIS_URL` - Redis connection for rate limiting and background queues (e.g. `redis://localhost:6379/0`).
    - Optional toggles: `INGEST_TRANSLATE=true` to enable the local translator bridge, `INGEST_ENABLE_JINA_READER=false` to opt out of the built-in markdown fallback, `INGEST_ARTICLE_API_URL` / `INGEST_ARTICLE_API_KEY` for a paid extractor endpoint, `BETA_SHARE_ENABLED` / `NEXT_PUBLIC_BETA_SHARE_ENABLED` for the partner pitch beta, and mesh settings (`MESH_STORAGE_PATH`, `MESH_PEERS`, `MESH_SECRET`).
 
 3. **Database**
@@ -106,11 +107,12 @@ Outputs land in `data/datasets/` as timestamped JSONL + metadata, ready for fine
 
 ## Scripts
 
-- `npm run ingest:sample` – sample ingest + summarise + verify + lens.
-- `npm run summarize:pending` / `npm run verify:pending` – catch up on outstanding jobs.
-- `npm run rank:train` – refresh ranking weights.
-- `npm run preview` – dev server + hot ingest loop.
-- `npm run dataset:build` – export annotated corpora.
+- `npm run ingest:sample` - sample ingest + summarise + verify + lens.
+- `npm run summarize:pending` / `npm run verify:pending` - catch up on outstanding jobs.
+- `npm run redis:check` - ping Redis using `REDIS_URL` to confirm connectivity (watch for `rate-limit:redis-fallback` warnings in logs).
+- `npm run rank:train` - refresh ranking weights.
+- `npm run preview` - dev server + hot ingest loop.
+- `npm run dataset:build` - export annotated corpora.
 
 ## Testing
 

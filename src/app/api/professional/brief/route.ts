@@ -46,4 +46,4 @@ export const POST = withRateLimit(async (request) => {
   });
 
   return NextResponse.json({ brief: payload });
-});
+}, { scope: "professional:brief", message: "Too many professional brief requests" });

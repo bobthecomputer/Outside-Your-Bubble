@@ -228,9 +228,19 @@ export async function updateLearningStep(stepId: string, status: "seen" | "done"
 
 export async function fetchAchievements(): Promise<AchievementResponse> {
   const response = await fetch("/api/achievements", { credentials: "include" });
+  const payload = await response.json().catch(() => null);
+
   if (!response.ok) {
-    const fallback = await response.json().catch(() => ({ achievements: [] }));
-    return fallback as AchievementResponse;
+    const message =
+      (payload as { error?: { message?: string }; message?: string } | null)?.error?.message ??
+      (payload as { message?: string } | null)?.message ??
+      "Failed to load achievements";
+    return { achievements: [], message };
   }
-  return (await response.json()) as AchievementResponse;
+
+  const achievements = (payload as { achievements?: AchievementResponse["achievements"] } | null)?.achievements;
+  return {
+    achievements: Array.isArray(achievements) ? achievements : [],
+    message: (payload as { message?: string } | null)?.message,
+  };
 }

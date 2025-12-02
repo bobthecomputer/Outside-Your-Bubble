@@ -5,18 +5,16 @@ import { logger } from "@/lib/logger";
 import { awardAchievement } from "@/lib/achievements";
 import { recordEvent } from "@/lib/events";
 import { getClientIp, buildRateLimitKey } from "@/lib/security/request";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request, context: { params: { itemId: string } }) {
   const { itemId } = context.params;
   const rateKey = buildRateLimitKey(request, "evidence:get");
-  const rate = applyRateLimit(rateKey, 60_000, 40);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many evidence requests" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(rateKey, 60_000, 40);
+  const limited = rateLimitExceededResponse(rate, "Too many evidence requests");
+  if (limited) {
+    return limited;
   }
 
   const session = await auth();

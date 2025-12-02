@@ -27,6 +27,7 @@ Key fields to set early:
 - `EMAIL_FROM` and SMTP details (defaults map to MailHog running from Compose).
 - `SERPER_API_KEY`: required for verification search.
 - `OLLAMA_BASE_URL` and `OLLAMA_MODELS`: point to your local or remote LLM server.
+- `REDIS_URL`: Redis connection string for rate limiting and any background queues (defaults to `redis://localhost:6379/0`).
 
 ## 4) Start services
 Use Docker Compose to launch the backing services.
@@ -36,6 +37,7 @@ docker compose up -d postgres redis mailhog
 - Postgres: `postgres://oyb:oyb@localhost:5432/oyb`
 - Redis: `redis://localhost:6379`
 - MailHog UI: http://localhost:8025
+- Connectivity check (optional): `npm run redis:check` will ping Redis using `REDIS_URL`.
 
 ## 5) Prepare the database
 Generate Prisma client and apply migrations:

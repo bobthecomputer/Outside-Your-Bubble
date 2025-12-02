@@ -2,17 +2,15 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { buildDeck } from "@/lib/deck";
 import { logger } from "@/lib/logger";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey, getClientIp } from "@/lib/security/request";
 
 export async function GET(request: Request) {
   const key = buildRateLimitKey(request, "deck:get");
-  const rate = applyRateLimit(key, 60_000, 45);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many deck requests" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(key, 60_000, 45);
+  const limited = rateLimitExceededResponse(rate, "Too many deck requests");
+  if (limited) {
+    return limited;
   }
 
   const session = await auth();

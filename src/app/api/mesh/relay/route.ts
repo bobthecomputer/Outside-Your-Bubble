@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { acceptMeshEnvelope, verifyMeshAuthorization, type MeshEnvelope } from "@/lib/p2p/mesh";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey } from "@/lib/security/request";
 import { logger } from "@/lib/logger";
 
@@ -35,12 +35,10 @@ export async function POST(request: Request) {
   }
 
   const rateKey = buildRateLimitKey(request, "mesh:relay");
-  const rate = applyRateLimit(rateKey, 30_000, 120);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Rate limit exceeded" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 30) } },
-    );
+  const rate = await applyRateLimit(rateKey, 30_000, 120);
+  const limited = rateLimitExceededResponse(rate, "Rate limit exceeded");
+  if (limited) {
+    return limited;
   }
 
   let body: unknown;

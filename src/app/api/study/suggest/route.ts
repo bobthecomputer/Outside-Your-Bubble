@@ -40,4 +40,4 @@ export const POST = withRateLimit(async (request) => {
   });
 
   return NextResponse.json({ suggestion: payload });
-});
+}, { scope: "study:suggest", message: "Too many study suggestions" });

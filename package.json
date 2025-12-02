@@ -14,6 +14,7 @@
     "ingest:sample": "tsx scripts/ingest-sample.ts",
     "verify:pending": "tsx scripts/verify-pending.ts",
     "summarize:pending": "tsx scripts/summarize-pending.ts",
+    "redis:check": "tsx scripts/check-redis.ts",
     "rank:train": "tsx scripts/rank-train.ts",
     "feedback:report": "tsx scripts/feedback-report.ts",
     "preview": "tsx scripts/preview.ts",

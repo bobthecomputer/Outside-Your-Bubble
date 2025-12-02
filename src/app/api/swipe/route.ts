@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { recordSwipe } from "@/lib/deck";
 import type { SwipeAction } from "@/types/deck";
 import { logger } from "@/lib/logger";
-import { applyRateLimit } from "@/lib/security/rate-limit";
+import { applyRateLimit, rateLimitExceededResponse } from "@/lib/security/rate-limit";
 import { buildRateLimitKey, getClientIp } from "@/lib/security/request";
 
 function isSwipeAction(value: unknown): value is SwipeAction {
@@ -12,12 +12,10 @@ function isSwipeAction(value: unknown): value is SwipeAction {
 
 export async function POST(request: Request) {
   const ip = getClientIp(request);
-  const rate = applyRateLimit(buildRateLimitKey(request, "deck:swipe"), 60_000, 120);
-  if (!rate.success) {
-    return NextResponse.json(
-      { message: "Too many swipe events" },
-      { status: 429, headers: { "Retry-After": String(rate.retryAfter ?? 60) } },
-    );
+  const rate = await applyRateLimit(buildRateLimitKey(request, "deck:swipe"), 60_000, 120);
+  const limited = rateLimitExceededResponse(rate, "Too many swipe events");
+  if (limited) {
+    return limited;
   }
 
   let body: unknown;
@@ -43,12 +41,10 @@ export async function POST(request: Request) {
   const userId = session?.user?.id ?? undefined;
 
   if (userId) {
-    const userRate = applyRateLimit(`deck:swipe:user:${userId}`, 60_000, 120);
-    if (!userRate.success) {
-      return NextResponse.json(
-        { message: "Too many swipe events" },
-        { status: 429, headers: { "Retry-After": String(userRate.retryAfter ?? 60) } },
-      );
+    const userRate = await applyRateLimit(`deck:swipe:user:${userId}`, 60_000, 120);
+    const userLimited = rateLimitExceededResponse(userRate, "Too many swipe events");
+    if (userLimited) {
+      return userLimited;
     }
   }
 

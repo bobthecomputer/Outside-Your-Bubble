@@ -19,4 +19,4 @@ export const GET = withRateLimit(async (request) => {
 
   const subject = (await runPython("random-subject", { args })) as Record<string, unknown> | null;
   return NextResponse.json({ subject });
-});
+}, { scope: "random:subject", message: "Too many random subject requests" });
