@@ -123,11 +123,11 @@ export function DeckCardContainer({
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2 }}
-            className="flex h-64 items-center justify-center rounded-2xl border border-neutral-900 bg-neutral-950/70"
+            className="flex h-64 items-center justify-center rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-glass)]"
             role="status"
             aria-live="polite"
           >
-            <Loader2 className="h-6 w-6 animate-spin text-neutral-500" aria-hidden="true" />
+            <Loader2 className="h-6 w-6 animate-spin text-[color:var(--foreground-muted)]" aria-hidden="true" />
             <span className="sr-only">Loading deck</span>
           </motion.div>
         ) : error ? (
@@ -137,7 +137,7 @@ export function DeckCardContainer({
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
             transition={{ duration: prefersReducedMotion ? 0.12 : 0.2 }}
-            className="rounded-2xl border border-rose-700/40 bg-rose-950/30 p-6 text-sm text-rose-200"
+            className="rounded-3xl border border-rose-700/40 bg-rose-950/20 p-6 text-sm text-rose-200"
             role="alert"
           >
             {error}
@@ -193,7 +193,7 @@ export function DeckCardContainer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-neutral-900 bg-neutral-950/70 p-10 text-center text-sm text-neutral-400"
+            className="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-glass)] p-10 text-center text-sm text-[color:var(--foreground-muted)]"
           >
             You have swiped through everything for now. Refresh to fetch a new slate.
           </motion.div>

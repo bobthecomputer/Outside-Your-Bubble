@@ -20,7 +20,7 @@ import Link from "next/link";
 import type React from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 
-import { DeckActionButton, DECK_ACTIONS } from "@/components/deck";
+import { DeckActionBar } from "@/components/deck";
 import type {
   DeckCard,
   DeckMode,
@@ -132,7 +132,7 @@ export function DeckCardPanel({
       animate={cardAnimation.animate}
       exit={cardAnimation.exit}
       transition={cardAnimation.transition}
-      className="relative min-h-[420px] touch-pan-y select-none overflow-hidden rounded-3xl border border-neutral-900 bg-neutral-950/80 p-6 shadow-xl"
+      className="relative min-h-[420px] touch-pan-y select-none overflow-hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-xl"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       id="deck-panel"
@@ -144,13 +144,13 @@ export function DeckCardPanel({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-neutral-800 px-3 py-1 text-xs uppercase tracking-widest text-neutral-400">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] px-3 py-1 text-xs uppercase tracking-widest text-[color:var(--foreground-muted)]">
             {card.topic?.label ?? "Outside pick"}
           </div>
-          <h2 className="text-2xl font-semibold text-neutral-50">{card.headline}</h2>
-          <p className="text-sm text-neutral-400">{card.reason}</p>
+          <h2 className="text-2xl font-semibold text-[color:var(--foreground)]">{card.headline}</h2>
+          <p className="text-sm text-[color:var(--foreground-muted)]">{card.reason}</p>
           {publishedAtText && (
-            <p className="text-xs text-neutral-500">{publishedAtText}</p>
+            <p className="text-xs text-[color:var(--foreground-muted)]">{publishedAtText}</p>
           )}
         </div>
         <div className="flex flex-col items-end gap-3 text-right">
@@ -161,14 +161,14 @@ export function DeckCardPanel({
             href={card.source.url}
             target="_blank"
             aria-label="Open original source"
-            className="inline-flex items-center gap-2 rounded-full border border-sky-600/40 px-3 py-1 text-xs text-sky-300 hover:border-sky-500"
+            className="inline-flex items-center gap-2 rounded-full border border-teal-500/50 px-3 py-1 text-xs text-teal-200 hover:border-teal-400"
           >
             <Info className="h-4 w-4" aria-hidden="true" /> Visit source
           </Link>
           <button
             type="button"
             onClick={onOpenEvidence}
-            className="inline-flex items-center gap-2 rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-600"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--foreground)] hover:border-[color:var(--accent-cool)]"
             aria-label="Open evidence drawer"
           >
             <Bookmark className="h-3.5 w-3.5" aria-hidden="true" /> Open evidence
@@ -177,7 +177,7 @@ export function DeckCardPanel({
             <button
               type="button"
               onClick={onShareOpen}
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-600/60 px-3 py-1 text-xs text-emerald-300 hover:border-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/60 px-3 py-1 text-xs text-emerald-200 hover:border-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Pitch story to partners"
             >
               <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> Pitch to partners
@@ -187,10 +187,10 @@ export function DeckCardPanel({
       </div>
 
       <div className="mt-6 space-y-4">
-        <p className="text-base text-neutral-200">{card.summary}</p>
+        <p className="text-base text-[color:var(--foreground)]">{card.summary}</p>
         <div className={clsx("overflow-hidden transition-all", expanded ? "max-h-[320px]" : "max-h-24")}>
           <motion.ul
-            className="space-y-3 text-sm text-neutral-300"
+            className="space-y-3 text-sm text-[color:var(--foreground-muted)]"
             initial={prefersReducedMotion ? undefined : "hidden"}
             animate={prefersReducedMotion ? undefined : "visible"}
             variants={
@@ -201,7 +201,7 @@ export function DeckCardPanel({
           >
             {card.bullets.map((bullet) => (
               <motion.li key={bullet} className="flex gap-3" variants={bulletVariants}>
-                <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-neutral-600" aria-hidden="true" />
+                <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-[color:var(--accent-cool)]" aria-hidden="true" />
                 <span>{bullet}</span>
               </motion.li>
             ))}
@@ -210,13 +210,13 @@ export function DeckCardPanel({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="inline-flex items-center gap-2 text-xs text-neutral-400 hover:text-neutral-200"
+          className="inline-flex items-center gap-2 text-xs text-[color:var(--foreground-muted)] hover:text-[color:var(--foreground)]"
         >
           {expanded ? <ChevronUp className="h-3 w-3" aria-hidden="true" /> : <ChevronDown className="h-3 w-3" aria-hidden="true" />}{" "}
           {expanded ? "Collapse" : "Expand"}
         </button>
         {card.excerpt && (
-          <blockquote className="border-l-2 border-neutral-800/70 pl-4 text-sm italic text-neutral-400">
+          <blockquote className="border-l-2 border-[color:var(--border)] pl-4 text-sm italic text-[color:var(--foreground-muted)]">
             "{card.excerpt}"
           </blockquote>
         )}
@@ -230,45 +230,45 @@ export function DeckCardPanel({
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
             transition={{ duration: prefersReducedMotion ? 0.18 : 0.25, ease: "easeOut" }}
-            className="mt-6 rounded-2xl border border-purple-700/40 bg-purple-950/30 p-4 text-sm text-purple-100"
+            className="mt-6 rounded-2xl border border-teal-700/40 bg-teal-950/30 p-4 text-sm text-teal-100"
             aria-label="Study helpers"
           >
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-purple-300">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-teal-300">
               <BookOpenCheck className="h-4 w-4" aria-hidden="true" /> Study helpers
             </div>
             {card.contextSummary ? (
-              <p className="mt-3 text-sm text-purple-100">{card.contextSummary}</p>
+              <p className="mt-3 text-sm text-teal-100">{card.contextSummary}</p>
             ) : (
-              <p className="mt-3 text-xs text-purple-200/80">Contextual summary loading-check the evidence drawer for deeper detail.</p>
+              <p className="mt-3 text-xs text-teal-200/80">Contextual summary loading-check the evidence drawer for deeper detail.</p>
             )}
             {contextChips.length > 0 && (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 {contextChips.map((chip) => (
                   <div
                     key={chip.id}
-                    className="rounded-xl border border-purple-800/40 bg-neutral-950/30 p-3"
+                    className="rounded-xl border border-teal-800/40 bg-neutral-950/30 p-3"
                     role="listitem"
                   >
-                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-purple-300">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-teal-300">
                       {chip.icon}
                       <span>{chip.label}</span>
                     </div>
-                    <p className="mt-1 text-xs text-purple-200/80">{chip.description}</p>
+                    <p className="mt-1 text-xs text-teal-200/80">{chip.description}</p>
                   </div>
                 ))}
               </div>
             )}
             {card.contextBullets.length > 0 && (
-              <ul className="mt-3 space-y-2 text-sm text-purple-100/90">
+              <ul className="mt-3 space-y-2 text-sm text-teal-100/90">
                 {card.contextBullets.map((bullet) => (
                   <li key={bullet} className="flex gap-2">
-                    <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-purple-400" aria-hidden="true" />
+                    <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-teal-400" aria-hidden="true" />
                     <span>{bullet}</span>
                   </li>
                 ))}
               </ul>
             )}
-            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-xl border border-purple-800/30 bg-neutral-950/40 p-3">
+            <div className="mt-4 flex flex-wrap items-center gap-4 rounded-xl border border-teal-800/30 bg-neutral-950/40 p-3">
               <div className="flex items-center gap-3">
                 <svg
                   viewBox="0 0 52 52"
@@ -276,12 +276,12 @@ export function DeckCardPanel({
                   role="img"
                   aria-label={`Focus progress ${Math.round(dwellProgress * 100)} percent`}
                 >
-                  <circle cx="26" cy="26" r="20" className="fill-none stroke-neutral-800" strokeWidth="3" />
+                  <circle cx="26" cy="26" r="20" className="fill-none stroke-[color:var(--border)]" strokeWidth="3" />
                   <motion.circle
                     cx="26"
                     cy="26"
                     r="20"
-                    className="fill-none stroke-purple-400"
+                    className="fill-none stroke-teal-400"
                     strokeWidth="3"
                     strokeDasharray={2 * Math.PI * 20}
                     strokeDashoffset={focusDashOffset}
@@ -290,23 +290,23 @@ export function DeckCardPanel({
                   />
                 </svg>
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-purple-300">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-teal-300">
                     <Timer className="h-3.5 w-3.5" aria-hidden="true" /> Focus time
                   </div>
-                  <p className="text-sm text-purple-100">
+                  <p className="text-sm text-teal-100">
                     {dwellSeconds}s / {focusTargetSeconds}s target
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-purple-200/80">Stay with this card to unlock richer prompts and path recommendations.</p>
+              <p className="text-xs text-teal-200/80">Stay with this card to unlock richer prompts and path recommendations.</p>
             </div>
             {card.studyPrompts.length > 0 && (
-              <div className="mt-4 rounded-xl border border-purple-700/30 bg-neutral-950/40 p-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-purple-300">Reflection prompts</p>
-                <ul className="mt-2 space-y-2 text-sm text-purple-100/90">
+              <div className="mt-4 rounded-xl border border-teal-700/30 bg-neutral-950/40 p-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-teal-300">Reflection prompts</p>
+                <ul className="mt-2 space-y-2 text-sm text-teal-100/90">
                   {card.studyPrompts.map((prompt) => (
                     <li key={prompt} className="flex gap-2">
-                      <Sparkles className="mt-0.5 h-3.5 w-3.5 text-purple-300" aria-hidden="true" />
+                      <Sparkles className="mt-0.5 h-3.5 w-3.5 text-teal-300" aria-hidden="true" />
                       <span>{prompt}</span>
                     </li>
                   ))}
@@ -314,11 +314,11 @@ export function DeckCardPanel({
               </div>
             )}
             {card.channels.length > 0 && (
-              <div className="mt-4 rounded-xl border border-purple-700/30 bg-neutral-950/40 p-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-purple-300">Signal channels</p>
-                <div className="mt-2 flex flex-wrap gap-2 text-xs text-purple-200/80">
+              <div className="mt-4 rounded-xl border border-teal-700/30 bg-neutral-950/40 p-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-teal-300">Signal channels</p>
+                <div className="mt-2 flex flex-wrap gap-2 text-xs text-teal-200/80">
                   {card.channels.map((channel) => (
-                    <span key={channel} className="inline-flex items-center gap-1 rounded-full border border-purple-600/40 bg-purple-950/40 px-3 py-1">
+                    <span key={channel} className="inline-flex items-center gap-1 rounded-full border border-teal-600/40 bg-teal-950/40 px-3 py-1">
                       <Radio className="h-3 w-3" aria-hidden="true" /> {channel}
                     </span>
                   ))}
@@ -326,28 +326,28 @@ export function DeckCardPanel({
               </div>
             )}
             <form
-              className="mt-4 grid gap-3 rounded-xl border border-purple-800/40 bg-neutral-950/40 p-3"
+              className="mt-4 grid gap-3 rounded-xl border border-teal-800/40 bg-neutral-950/40 p-3"
               onSubmit={(event) => {
                 event.preventDefault();
                 onStudySuggestion();
               }}
             >
-              <label className="text-xs font-semibold uppercase tracking-widest text-purple-300">
+              <label className="text-xs font-semibold uppercase tracking-widest text-teal-300">
                 What are you studying?
                 <input
                   type="text"
                   value={studyTopic}
                   onChange={(event) => setStudyTopic(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-purple-700/40 bg-neutral-950/60 px-3 py-2 text-sm text-purple-100 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                  className="mt-1 w-full rounded-xl border border-teal-700/40 bg-neutral-950/60 px-3 py-2 text-sm text-teal-100 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40"
                   placeholder="e.g. Climate finance, constitutional reform"
                 />
               </label>
-              <label className="text-xs font-semibold uppercase tracking-widest text-purple-300">
+              <label className="text-xs font-semibold uppercase tracking-widest text-teal-300">
                 Thinking model
                 <select
                   value={studyModel}
                   onChange={(event) => setStudyModel(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-purple-700/40 bg-neutral-950/60 px-3 py-2 text-sm text-purple-100 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                  className="mt-1 w-full rounded-xl border border-teal-700/40 bg-neutral-950/60 px-3 py-2 text-sm text-teal-100 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40"
                 >
                   <option value="quen-3.4b">Qwen 3.4b</option>
                   <option value="quen-3.4b-thinking">Qwen 3.4b - Thinking</option>
@@ -358,7 +358,7 @@ export function DeckCardPanel({
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 rounded-full border border-purple-500/60 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-purple-100 hover:border-purple-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-full border border-teal-500/60 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-teal-100 hover:border-teal-400 disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={studyLoading}
                 >
                   <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
@@ -367,42 +367,42 @@ export function DeckCardPanel({
                 {studyError && <span className="text-xs text-rose-200">{studyError}</span>}
               </div>
               {studySuggestion && (
-                <div className="grid gap-3 rounded-xl border border-purple-700/40 bg-neutral-950/30 p-3 text-sm text-purple-100/90">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-purple-300">Spotlight subject</p>
+                <div className="grid gap-3 rounded-xl border border-teal-700/40 bg-neutral-950/30 p-3 text-sm text-teal-100/90">
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-300">Spotlight subject</p>
                   <p>{studySuggestion.spotlightSubject}</p>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-purple-300">Presentation question</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-300">Presentation question</p>
                   <p>{studySuggestion.presentationQuestion}</p>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-purple-300">Questions to explore</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-300">Questions to explore</p>
                   <ul className="space-y-2">
                     {studySuggestion.questions.map((question) => (
                       <li key={question} className="flex gap-2">
-                        <Sparkles className="mt-0.5 h-3 w-3 text-purple-300" aria-hidden="true" />
+                        <Sparkles className="mt-0.5 h-3 w-3 text-teal-300" aria-hidden="true" />
                         <span>{question}</span>
                       </li>
                     ))}
                   </ul>
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-purple-300">Presentation prompt</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-300">Presentation prompt</p>
                   <p>{studySuggestion.presentationPrompt}</p>
                   {studySuggestion.impactHints.length > 0 && (
                     <>
-                      <p className="text-[11px] font-semibold uppercase tracking-widest text-purple-300">Impact hints</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-300">Impact hints</p>
                       <ul className="space-y-1 text-sm">
                         {studySuggestion.impactHints.map((hint) => (
                           <li key={hint} className="flex gap-2">
-                            <Radio className="mt-0.5 h-3 w-3 text-purple-300" aria-hidden="true" />
+                            <Radio className="mt-0.5 h-3 w-3 text-teal-300" aria-hidden="true" />
                             <span>{hint}</span>
                           </li>
                         ))}
                       </ul>
                     </>
                   )}
-                  <p className="text-[10px] text-purple-300/70">Method: {studySuggestion.method}</p>
+                  <p className="text-[10px] text-teal-300/70">Method: {studySuggestion.method}</p>
                 </div>
               )}
             </form>
 
-            <div className="mt-4 rounded-xl border border-purple-800/40 bg-neutral-950/40 p-3">
-              <label className="text-xs font-semibold uppercase tracking-widest text-purple-300">
+            <div className="mt-4 rounded-xl border border-teal-800/40 bg-neutral-950/40 p-3">
+              <label className="text-xs font-semibold uppercase tracking-widest text-teal-300">
                 Notes
                 <textarea
                   id={noteFieldId}
@@ -410,11 +410,11 @@ export function DeckCardPanel({
                   value={noteValue}
                   onChange={(event) => onNoteChange(event.target.value)}
                   rows={4}
-                  className="mt-1 w-full rounded-xl border border-purple-700/40 bg-neutral-950/60 p-3 text-sm text-purple-100 outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-500/40"
+                  className="mt-1 w-full rounded-xl border border-teal-700/40 bg-neutral-950/60 p-3 text-sm text-teal-100 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40"
                   placeholder="Capture takeaways or cross-links."
                 />
               </label>
-              <p id={noteHintId} className="mt-1 text-xs text-purple-200/80">
+              <p id={noteHintId} className="mt-1 text-xs text-teal-200/80">
                 Notes stay on this device.
               </p>
             </div>
@@ -529,12 +529,12 @@ export function DeckCardPanel({
       </AnimatePresence>
 
       {deckMode === "discover" && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-neutral-400">
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-[color:var(--foreground-muted)]">
           {contextChips.length > 0
             ? contextChips.map((chip) => (
                 <span
                   key={chip.id}
-                  className="inline-flex items-center gap-1 rounded-full border border-neutral-700/70 bg-neutral-900/60 px-3 py-1"
+                  className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-elevated)] px-3 py-1"
                 >
                   {chip.icon}
                   <span>{chip.label}</span>
@@ -543,18 +543,18 @@ export function DeckCardPanel({
             : card.channels.map((channel) => (
                 <span
                   key={channel}
-                  className="inline-flex items-center gap-1 rounded-full border border-neutral-700 px-3 py-1"
+                  className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border)] px-3 py-1"
                 >
                   <Sparkles className="h-3 w-3" aria-hidden="true" /> {channel}
                 </span>
               ))}
           {contextChips.length === 0 && card.translationProvider && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-sky-600/40 bg-sky-950/30 px-3 py-1 text-sky-200">
+            <span className="inline-flex items-center gap-1 rounded-full border border-teal-600/40 bg-teal-950/20 px-3 py-1 text-teal-200">
               <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" /> Translated via {card.translationProvider}
             </span>
           )}
           {contextChips.length === 0 && card.language && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-neutral-700/60 bg-neutral-900/60 px-3 py-1 text-neutral-200">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-elevated)] px-3 py-1 text-[color:var(--foreground)]">
               <Languages className="h-3 w-3" aria-hidden="true" /> Original language: {card.language.toUpperCase()}
             </span>
           )}
@@ -567,19 +567,15 @@ export function DeckCardPanel({
             key={citation.url}
             href={citation.url}
             target="_blank"
-            className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-3 text-xs text-neutral-300 hover:border-neutral-700"
+            className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] p-3 text-xs text-[color:var(--foreground-muted)] hover:border-[color:var(--accent-warm)]"
           >
-            <span className="block text-neutral-500">Source</span>
-            <span className="block truncate text-neutral-200">{citation.label}</span>
+            <span className="block text-[color:var(--foreground-muted)]">Source</span>
+            <span className="block truncate text-[color:var(--foreground)]">{citation.label}</span>
           </Link>
         ))}
       </div>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        {DECK_ACTIONS.map((action) => (
-          <DeckActionButton key={action} action={action} onAction={onAction} disabled={!card} />
-        ))}
-      </div>
+      <DeckActionBar onAction={onAction} disabled={!card} />
     </motion.article>
   );
 }

@@ -1,5 +1,6 @@
 export { AchievementToastStack } from "./achievement-toast-stack";
 export { ACTION_COPY, DECK_ACTIONS, DeckActionButton } from "./deck-action-button";
+export { DeckActionBar } from "./deck-action-bar";
 export { DeckCardPanel } from "./deck-card-panel";
 export { DeckCardContainer } from "./deck-card-container";
 export { DeckHeader } from "./deck-header";

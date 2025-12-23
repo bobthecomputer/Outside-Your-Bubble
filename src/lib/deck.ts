@@ -6,6 +6,8 @@ import { normalizeSummaryCitations } from "./citations";
 import { logger } from "./logger";
 import { awardAchievement } from "./achievements";
 import { recordEvent } from "./events";
+import { DEFAULT_PREFERENCES } from "./config";
+import { planSlate, type UserPreferenceVector } from "./ranking/personalization";
 
 export type { DeckCardReason, DeckCardView, SwipeAction } from "@/types/deck";
 
@@ -44,6 +46,52 @@ type DeckCardWithRelations = DeckCardModel & {
   };
   topic: Topic | null;
 };
+
+async function loadUserPreferences(userId: string): Promise<UserPreferenceVector> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { prefs: true, nationality: true },
+  });
+
+  const prefs = user?.prefs as {
+    topics?: unknown;
+    serendipity?: unknown;
+    homeCountry?: unknown;
+  } | null;
+
+  const likedTopics = Array.isArray(prefs?.topics)
+    ? prefs.topics.filter((entry): entry is string => typeof entry === "string")
+    : DEFAULT_PREFERENCES.topics;
+
+  const serendipity = typeof prefs?.serendipity === "number" ? prefs.serendipity : DEFAULT_PREFERENCES.serendipity;
+
+  const nationality =
+    typeof user?.nationality === "string"
+      ? user.nationality
+      : typeof prefs?.homeCountry === "string"
+        ? prefs.homeCountry
+        : DEFAULT_PREFERENCES.homeCountry;
+
+  return {
+    likedTopics,
+    serendipity,
+    nationality: nationality ?? null,
+  };
+}
+
+function buildPersonalizationScores(
+  cards: DeckCardWithRelations[],
+  preferences: UserPreferenceVector,
+): Map<string, number> {
+  const items = cards.map((card) => ({
+    id: card.itemId,
+    tags: card.item.tags,
+    status: card.item.status,
+  }));
+
+  const plan = planSlate({ items, preferences });
+  return new Map(plan.candidates.map((candidate) => [candidate.id, candidate.score]));
+}
 
 function toDeckView(card: DeckCardWithRelations): DeckCardView | null {
   const { item } = card;
@@ -201,6 +249,7 @@ async function fallbackItems(excludeItemIds: string[], limit: number): Promise<D
 export async function buildDeck(options: { userId?: string; limit?: number; ip?: string | null } = {}): Promise<DeckCardView[]> {
   const { userId, limit = DEFAULT_DECK_LIMIT, ip } = options;
   const recentItemIds = await loadRecentItemIds(userId);
+  const preferences = userId ? await loadUserPreferences(userId) : null;
 
   const candidates = await prisma.deckCard.findMany({
     where: {
@@ -224,6 +273,17 @@ export async function buildDeck(options: { userId?: string; limit?: number; ip?:
     ],
     take: limit * 4,
   });
+
+  if (preferences) {
+    const personalizationScores = buildPersonalizationScores(candidates, preferences);
+    candidates.sort((a, b) => {
+      const scoreDelta = (personalizationScores.get(b.itemId) ?? 0) - (personalizationScores.get(a.itemId) ?? 0);
+      if (scoreDelta !== 0) return scoreDelta;
+      const rankDelta = (b.rank ?? 0) - (a.rank ?? 0);
+      if (rankDelta !== 0) return rankDelta;
+      return b.updatedAt.getTime() - a.updatedAt.getTime();
+    });
+  }
 
   const deduped: DeckCardView[] = [];
   const topicCounts = new Map<string, number>();

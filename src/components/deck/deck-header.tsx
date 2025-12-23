@@ -45,16 +45,16 @@ export function DeckHeader({
   randomSubject,
 }: DeckHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 rounded-2xl border border-neutral-900 bg-neutral-950/80 p-6 shadow-lg">
+    <header className="flex flex-col gap-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-glass)] p-6 shadow-[0_30px_80px_-60px_rgba(0,0,0,0.8)]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Topic deck</h1>
-          <p id={instructionsId} className="text-sm text-neutral-400">
+          <p id={instructionsId} className="text-sm text-[color:var(--foreground-muted)]">
             Swipe with your keyboard or fingertips. Left = Skip, Right = Learn, Up = Save, Down = Mute. Press Space to expand bullets. Try Random to shuffle the taxonomy, Study for deeper prompts, or Professional for client-ready briefs.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex overflow-hidden rounded-full border border-neutral-800 bg-neutral-900/60 text-xs font-semibold uppercase tracking-widest">
+          <div className="inline-flex overflow-hidden rounded-full border border-[color:var(--border)] bg-[color:var(--ink-soft)] text-xs font-semibold uppercase tracking-widest">
             {(
               [
                 { mode: "discover" as DeckMode, label: "Discover", icon: <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> },
@@ -68,17 +68,17 @@ export function DeckHeader({
               ] as Array<{ mode: DeckMode; label: string; icon: ReactNode }>
             ).map((entry, index) => {
               const active = deckMode === entry.mode;
-              let activeClasses = "bg-neutral-800 text-neutral-100";
-              let inactiveClasses = "text-neutral-400 hover:text-neutral-100";
+              let activeClasses = "bg-[color:var(--surface-elevated)] text-[color:var(--paper-bright)]";
+              let inactiveClasses = "text-[color:var(--foreground-muted)] hover:text-[color:var(--foreground)]";
               if (entry.mode === "study") {
-                activeClasses = "bg-purple-700/30 text-purple-100";
-                inactiveClasses = "text-purple-300/80 hover:text-purple-200";
+                activeClasses = "bg-teal-700/30 text-teal-100";
+                inactiveClasses = "text-teal-200/80 hover:text-teal-100";
               } else if (entry.mode === "professional") {
                 activeClasses = "bg-amber-700/30 text-amber-100";
                 inactiveClasses = "text-amber-300/80 hover:text-amber-200";
               } else if (entry.mode === "random") {
-                activeClasses = "bg-sky-700/30 text-sky-100";
-                inactiveClasses = "text-sky-300/80 hover:text-sky-200";
+                activeClasses = "bg-cyan-700/30 text-cyan-100";
+                inactiveClasses = "text-cyan-300/80 hover:text-cyan-200";
               }
               return (
                 <button
@@ -88,7 +88,7 @@ export function DeckHeader({
                   aria-pressed={active}
                   className={clsx(
                     "flex items-center gap-2 px-3 py-2 transition-colors",
-                    index < 2 && "border-r border-neutral-800/70",
+                    index < 2 && "border-r border-[color:var(--border)]",
                     active ? activeClasses : inactiveClasses,
                   )}
                 >
@@ -106,7 +106,7 @@ export function DeckHeader({
               "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-colors",
               highContrast
                 ? "border-amber-400/60 text-amber-200"
-                : "border-neutral-700 text-neutral-400 hover:border-amber-400/40 hover:text-amber-200",
+                : "border-[color:var(--border)] text-[color:var(--foreground-muted)] hover:border-amber-400/60 hover:text-amber-200",
             )}
           >
             <Contrast className="h-4 w-4" aria-hidden="true" />
@@ -119,8 +119,8 @@ export function DeckHeader({
             className={clsx(
               "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-colors",
               achievementsEnabled
-                ? "border-emerald-500/50 text-emerald-300"
-                : "border-neutral-700 text-neutral-400 hover:border-emerald-500/40 hover:text-emerald-200",
+                ? "border-emerald-500/50 text-emerald-200"
+                : "border-[color:var(--border)] text-[color:var(--foreground-muted)] hover:border-emerald-400/60 hover:text-emerald-200",
             )}
           >
             <Award className="h-4 w-4" aria-hidden="true" />
@@ -131,7 +131,7 @@ export function DeckHeader({
             onClick={onRandomSubject}
             className={clsx(
               "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-colors",
-              "border-sky-600/50 text-sky-200 hover:border-sky-500",
+              "border-cyan-600/50 text-cyan-200 hover:border-cyan-400",
               randomLoading && "opacity-70",
             )}
             disabled={randomLoading}
@@ -141,10 +141,10 @@ export function DeckHeader({
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-400">
-        <span className="rounded-full border border-neutral-800 px-2 py-1">Median dwell target: 8s+</span>
-        <span className="rounded-full border border-neutral-800 px-2 py-1">Keyboard: Left/Right/Up/Down or Space</span>
-        <span className="rounded-full border border-neutral-800 px-2 py-1">
+      <div className="flex flex-wrap items-center gap-3 text-xs text-[color:var(--foreground-muted)]">
+        <span className="rounded-full border border-[color:var(--border)] px-2 py-1">Median dwell target: 8s+</span>
+        <span className="rounded-full border border-[color:var(--border)] px-2 py-1">Keyboard: Left/Right/Up/Down or Space</span>
+        <span className="rounded-full border border-[color:var(--border)] px-2 py-1">
           {deckMode === "random"
             ? "Random mode jumps to unexpected subjects"
             : deckMode === "study"
@@ -156,25 +156,25 @@ export function DeckHeader({
         <button
           type="button"
           onClick={onRefreshDeck}
-          className="inline-flex items-center gap-2 rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-300 hover:border-neutral-600"
+          className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--foreground)] hover:border-[color:var(--accent-cool)]"
         >
           <RefreshCw className="h-3.5 w-3.5" /> Refresh deck
         </button>
         {randomSubject && (
-          <span className="inline-flex items-center gap-2 rounded-full border border-sky-600/40 bg-sky-950/30 px-3 py-1 text-sky-200">
+          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-600/40 bg-cyan-950/30 px-3 py-1 text-cyan-200">
             <Shuffle className="h-3 w-3" aria-hidden="true" />
             {randomSubject.label}
             {Array.isArray(randomSubject.path) && randomSubject.path.length > 0 && (
-          <span className="text-sky-300/80"> / {randomSubject.path.join(" / ")}</span>
-        )}
-        {randomSubject.tags.length > 0 && (
-          <span className="text-sky-300/80">
-            - {randomSubject.tags.slice(0, 2).join(", ")}
-            {randomSubject.tags.length > 2 ? "..." : ""}
+              <span className="text-cyan-300/80"> / {randomSubject.path.join(" / ")}</span>
+            )}
+            {randomSubject.tags.length > 0 && (
+              <span className="text-cyan-300/80">
+                - {randomSubject.tags.slice(0, 2).join(", ")}
+                {randomSubject.tags.length > 2 ? "..." : ""}
+              </span>
+            )}
           </span>
         )}
-      </span>
-    )}
         {randomError && (
           <span className="inline-flex items-center gap-2 rounded-full border border-rose-600/40 bg-rose-950/30 px-3 py-1 text-rose-200">
             <Info className="h-3 w-3" aria-hidden="true" /> {randomError}

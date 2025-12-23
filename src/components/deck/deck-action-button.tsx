@@ -39,12 +39,12 @@ export function DeckActionButton({ action, onAction, disabled }: DeckActionButto
       className={clsx(
         "flex flex-1 items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold uppercase tracking-widest",
         action === "right"
-          ? "border-emerald-600/60 text-emerald-300 hover:border-emerald-500"
+          ? "border-teal-500/60 text-teal-200 hover:border-teal-400"
           : action === "up"
-            ? "border-sky-600/60 text-sky-300 hover:border-sky-500"
+            ? "border-amber-500/60 text-amber-200 hover:border-amber-400"
             : action === "down"
-              ? "border-rose-600/50 text-rose-300 hover:border-rose-500"
-              : "border-neutral-700 text-neutral-300 hover:border-neutral-500",
+              ? "border-rose-500/60 text-rose-200 hover:border-rose-400"
+              : "border-[color:var(--border)] text-[color:var(--foreground)] hover:border-[color:var(--foreground-muted)]",
         "disabled:cursor-not-allowed disabled:opacity-60",
       )}
     >

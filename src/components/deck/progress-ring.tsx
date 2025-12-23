@@ -7,10 +7,10 @@ export function ProgressRing({ value }: ProgressRingProps) {
   return (
     <div className="relative h-16 w-16">
       <div
-        className="absolute inset-0 rounded-full border border-neutral-800"
-        style={{ background: `conic-gradient(#a855f7 ${clamped}%, rgba(38,38,38,0.6) 0)` }}
+        className="absolute inset-0 rounded-full border border-[color:var(--border)]"
+        style={{ background: `conic-gradient(var(--accent-cool) ${clamped}%, rgba(42,50,61,0.6) 0)` }}
       />
-      <div className="absolute inset-2 flex items-center justify-center rounded-full bg-neutral-950 text-sm font-semibold text-neutral-200">
+      <div className="absolute inset-2 flex items-center justify-center rounded-full bg-[color:var(--ink-strong)] text-sm font-semibold text-[color:var(--foreground)]">
         {Math.round(clamped)}%
       </div>
     </div>

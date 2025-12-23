@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, JetBrains_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const brandSans = Manrope({
+  variable: "--font-brand-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const brandDisplay = Fraunces({
+  variable: "--font-brand-display",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const brandMono = JetBrains_Mono({
+  variable: "--font-brand-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,9 +32,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-neutral-950">
-      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-neutral-950 text-neutral-100`}>
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(76,29,149,0.18),_transparent_45%),radial-gradient(circle_at_bottom,_rgba(8,145,178,0.12),_transparent_40%)]">
+    <html lang="en" className="bg-[color:var(--background)]">
+      <body
+        className={`${brandSans.variable} ${brandDisplay.variable} ${brandMono.variable} min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)]`}
+      >
+        <div className="min-h-screen bg-[radial-gradient(1000px_circle_at_top,_rgba(14,116,144,0.18),_transparent_55%),radial-gradient(1000px_circle_at_bottom,_rgba(202,138,4,0.16),_transparent_60%)]">
           <SiteHeader />
           {children}
         </div>

@@ -888,8 +888,8 @@ export default function DeckPage() {
   return (
     <div
       className={clsx(
-        "min-h-screen text-neutral-100 transition-colors",
-        highContrast ? "bg-black text-white" : "bg-neutral-950",
+        "min-h-screen text-[color:var(--foreground)] transition-colors",
+        highContrast ? "bg-black text-white" : "bg-[color:var(--background)]",
       )}
     >
       <a

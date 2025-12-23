@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import * as Dialog from "@radix-ui/react-dialog";
 import clsx from "clsx";
@@ -38,20 +37,20 @@ export function ShareDialog({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
         <Dialog.Content className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl rounded-3xl border border-neutral-800 bg-neutral-950/95 p-6 shadow-2xl">
+          <div className="w-full max-w-xl rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <Dialog.Title className="text-lg font-semibold text-neutral-100">Partner pitch beta</Dialog.Title>
-                <Dialog.Description className="mt-1 text-sm text-neutral-400">
+                <Dialog.Title className="text-lg font-semibold text-[color:var(--foreground)]">Partner pitch beta</Dialog.Title>
+                <Dialog.Description className="mt-1 text-sm text-[color:var(--foreground-muted)]">
                   Share especially novel coverage with vetted cross-border newsrooms. Submissions stay private until a curator approves them.
                 </Dialog.Description>
               </div>
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="rounded-full border border-neutral-800 px-3 py-1 text-xs uppercase tracking-widest text-neutral-400 hover:border-neutral-600 hover:text-neutral-200"
+                className="rounded-full border border-[color:var(--border)] px-3 py-1 text-xs uppercase tracking-widest text-[color:var(--foreground-muted)] hover:border-[color:var(--accent-cool)] hover:text-[color:var(--foreground)]"
               >
                 Close
               </button>
@@ -65,7 +64,7 @@ export function ShareDialog({
                   onSubmit();
                 }}
               >
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Headline for partners
                   <input
                     type="text"
@@ -79,13 +78,13 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder="Give partners context in a sentence"
                     required
                   />
                 </label>
 
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Short summary
                   <textarea
                     rows={4}
@@ -99,12 +98,12 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder="Why this story matters and what makes it distinct"
                   />
                 </label>
 
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Context summary
                   <textarea
                     rows={3}
@@ -118,12 +117,12 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder="Add 1-2 sentences of framing the partners can quote"
                   />
                 </label>
 
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Study prompts (one per line)
                   <textarea
                     rows={3}
@@ -136,15 +135,15 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder={`e.g.\nWhat does this mean for ${card.topic?.label ?? "the region"}?`}
                   />
                 </label>
 
                 {card.channels.length > 0 && (
-                  <fieldset className="space-y-2 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4">
-                    <legend className="text-sm font-semibold text-neutral-200">Distribution channels</legend>
-                    <p className="text-xs text-neutral-500">Toggle which discovery paths should receive this pitch.</p>
+                  <fieldset className="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] p-4">
+                    <legend className="text-sm font-semibold text-[color:var(--foreground)]">Distribution channels</legend>
+                    <p className="text-xs text-[color:var(--foreground-muted)]">Toggle which discovery paths should receive this pitch.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {card.channels.map((channel) => {
                         const checked = shareState.channels.includes(channel);
@@ -155,7 +154,7 @@ export function ShareDialog({
                               "inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-xs uppercase tracking-widest",
                               checked
                                 ? "border-emerald-500/60 text-emerald-200"
-                                : "border-neutral-700 text-neutral-400 hover:border-emerald-500/40 hover:text-emerald-200",
+                                : "border-[color:var(--border)] text-[color:var(--foreground-muted)] hover:border-emerald-500/40 hover:text-emerald-200",
                             )}
                           >
                             <input
@@ -187,7 +186,7 @@ export function ShareDialog({
                   </fieldset>
                 )}
 
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Novel angle or context
                   <input
                     type="text"
@@ -201,13 +200,13 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder="e.g. Regional coalition challenges dominant narrative"
                   />
                 </label>
 
                 <div className="grid gap-3 md:grid-cols-2">
-                  <label className="block text-sm font-semibold text-neutral-200">
+                  <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                     Original language code
                     <input
                       type="text"
@@ -221,11 +220,11 @@ export function ShareDialog({
                           message: null,
                         }))
                       }
-                      className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                      className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                       placeholder={card.language ?? "en"}
                     />
                   </label>
-                  <label className="block text-sm font-semibold text-neutral-200">
+                  <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                     Translation provider
                     <input
                       type="text"
@@ -239,13 +238,13 @@ export function ShareDialog({
                           message: null,
                         }))
                       }
-                      className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                      className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                       placeholder={card.translationProvider ?? "google-translate"}
                     />
                   </label>
                 </div>
 
-                <label className="block text-sm font-semibold text-neutral-200">
+                <label className="block text-sm font-semibold text-[color:var(--foreground)]">
                   Canonical URL
                   <input
                     type="url"
@@ -258,30 +257,30 @@ export function ShareDialog({
                         message: null,
                       }))
                     }
-                    className="mt-1 w-full rounded-2xl border border-neutral-800 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none focus:border-emerald-500"
+                    className="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] px-3 py-2 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--accent-warm)]"
                     placeholder={card.source.url}
                   />
                 </label>
 
                 <div>
-                  <p className="text-sm font-semibold text-neutral-200">Partner outlets</p>
-                  <p className="text-xs text-neutral-500">Select up to five destinations for this pitch.</p>
+                  <p className="text-sm font-semibold text-[color:var(--foreground)]">Partner outlets</p>
+                  <p className="text-xs text-[color:var(--foreground-muted)]">Select up to five destinations for this pitch.</p>
                   <div className="mt-3 grid gap-3">
                     {partnerOptions.map((partner) => (
                       <label
                         key={partner.code}
-                        className="flex gap-3 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-3 text-left text-sm text-neutral-300"
+                        className="flex gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] p-3 text-left text-sm text-[color:var(--foreground-muted)]"
                       >
                         <input
                           type="checkbox"
                           checked={shareState.partners.includes(partner.code)}
                           onChange={() => togglePartner(partner.code)}
-                          className="mt-1 h-4 w-4 flex-shrink-0 rounded border-neutral-700 bg-neutral-950 text-emerald-500 focus:ring-emerald-500"
+                          className="mt-1 h-4 w-4 flex-shrink-0 rounded border-[color:var(--border)] bg-[color:var(--ink-strong)] text-emerald-500 focus:ring-emerald-500"
                         />
                         <div>
-                          <p className="font-semibold text-neutral-100">{partner.name}</p>
-                          <p className="text-xs text-neutral-400">{partner.description}</p>
-                          <p className="mt-1 text-[11px] uppercase tracking-wide text-neutral-500">
+                          <p className="font-semibold text-[color:var(--foreground)]">{partner.name}</p>
+                          <p className="text-xs text-[color:var(--foreground-muted)]">{partner.description}</p>
+                          <p className="mt-1 text-[11px] uppercase tracking-wide text-[color:var(--foreground-muted)]">
                             Regions: {partner.regions.join(", ")} • Languages: {partner.languages.join(", ")}
                           </p>
                         </div>
@@ -298,7 +297,7 @@ export function ShareDialog({
                         ? "border-emerald-600/60 bg-emerald-950/30 text-emerald-200"
                         : shareState.status === "error"
                           ? "border-rose-600/60 bg-rose-950/30 text-rose-200"
-                          : "border-sky-600/60 bg-sky-950/30 text-sky-200",
+                        : "border-teal-600/60 bg-teal-950/20 text-teal-200",
                     )}
                   >
                     {shareState.message}
@@ -309,7 +308,7 @@ export function ShareDialog({
                   <button
                     type="button"
                     onClick={() => onOpenChange(false)}
-                    className="rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-neutral-400 hover:border-neutral-600 hover:text-neutral-100"
+                    className="rounded-full border border-[color:var(--border)] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[color:var(--foreground-muted)] hover:border-[color:var(--accent-cool)] hover:text-[color:var(--foreground)]"
                   >
                     Cancel
                   </button>
@@ -323,7 +322,7 @@ export function ShareDialog({
                 </div>
               </form>
             ) : (
-              <p className="mt-6 text-sm text-neutral-400">Load a card from the deck to pitch it to partners.</p>
+              <p className="mt-6 text-sm text-[color:var(--foreground-muted)]">Load a card from the deck to pitch it to partners.</p>
             )}
           </div>
         </Dialog.Content>

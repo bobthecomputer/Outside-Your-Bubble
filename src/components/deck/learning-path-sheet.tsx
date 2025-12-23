@@ -38,17 +38,17 @@ export function LearningPathSheet({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-        <Dialog.Content className="fixed inset-0 z-50 mx-auto flex w-full max-w-4xl flex-col overflow-y-auto rounded-2xl border border-neutral-800 bg-neutral-950/95 p-6 text-neutral-100 shadow-2xl">
+        <Dialog.Content className="fixed inset-0 z-50 mx-auto flex w-full max-w-4xl flex-col overflow-y-auto rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--foreground)] shadow-2xl">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <Dialog.Title className="text-lg font-semibold text-neutral-100">
+              <Dialog.Title className="text-lg font-semibold text-[color:var(--foreground)]">
                 Learning mode
               </Dialog.Title>
-              <p className="text-sm text-neutral-400">
+              <p className="text-sm text-[color:var(--foreground-muted)]">
                 Build a five-article outside path, then seal it with a recap quiz and impact hints.
               </p>
             </div>
-            <Dialog.Close className="rounded-full border border-neutral-800 px-3 py-1 text-xs text-neutral-400 hover:text-neutral-100">
+            <Dialog.Close className="rounded-full border border-[color:var(--border)] px-3 py-1 text-xs text-[color:var(--foreground-muted)] hover:text-[color:var(--foreground)]">
               Close
             </Dialog.Close>
           </div>
@@ -59,16 +59,18 @@ export function LearningPathSheet({
               <div className="flex flex-wrap items-center gap-6">
                 <ProgressRing value={progressPercent} />
                 <div>
-                  <p className="text-sm font-medium text-neutral-300">Topic</p>
-                  <p className="text-lg font-semibold text-neutral-100">
+                  <p className="text-sm font-medium text-[color:var(--foreground-muted)]">Topic</p>
+                  <p className="text-lg font-semibold text-[color:var(--foreground)]">
                     {path.topic?.label ?? "Outside focus"}
                   </p>
-                  <p className="text-xs uppercase tracking-widest text-neutral-500">Progress: {path.progress} / {path.required}</p>
+                  <p className="text-xs uppercase tracking-widest text-[color:var(--foreground-muted)]">
+                    Progress: {path.progress} / {path.required}
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={onRefresh}
-                  className="ml-auto inline-flex items-center gap-2 rounded-full border border-neutral-800 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-200 hover:border-neutral-700"
+                  className="ml-auto inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--foreground)] hover:border-[color:var(--accent-cool)]"
                 >
                   <RefreshCw className="h-3.5 w-3.5" /> Refresh path
                 </button>
@@ -78,41 +80,41 @@ export function LearningPathSheet({
                   <div
                     key={step.id}
                     className={clsx(
-                      "rounded-xl border bg-neutral-900/60 p-4",
-                      step.kind === "quiz" ? "border-purple-700/40" : "border-neutral-800",
+                      "rounded-2xl border bg-[color:var(--surface-elevated)] p-4",
+                      step.kind === "quiz" ? "border-teal-700/40" : "border-[color:var(--border)]",
                     )}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-neutral-400">
+                        <p className="text-xs uppercase tracking-widest text-[color:var(--foreground-muted)]">
                           {step.kind === "quiz" ? "Recap quiz" : "Article"}
                         </p>
-                        <h3 className="text-base font-semibold text-neutral-100">
+                        <h3 className="text-base font-semibold text-[color:var(--foreground)]">
                           {step.kind === "quiz" ? step.title : step.title}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-neutral-400">
-                        <span className="rounded-full border border-neutral-700 px-2 py-1 capitalize">{step.status}</span>
+                      <div className="flex items-center gap-2 text-xs text-[color:var(--foreground-muted)]">
+                        <span className="rounded-full border border-[color:var(--border)] px-2 py-1 capitalize">{step.status}</span>
                         {step.kind === "article" && (
                           <Link
                             href={step.url}
                             target="_blank"
-                            className="inline-flex items-center gap-1 rounded-full border border-neutral-700 px-2 py-1 text-xs text-sky-400 hover:border-sky-500"
+                            className="inline-flex items-center gap-1 rounded-full border border-[color:var(--border)] px-2 py-1 text-xs text-teal-300 hover:border-teal-400"
                           >
                             <BookOpenCheck className="h-3.5 w-3.5" /> Open
                           </Link>
                         )}
                       </div>
                     </div>
-                    <div className="mt-3 space-y-3 text-sm text-neutral-300">
+                    <div className="mt-3 space-y-3 text-sm text-[color:var(--foreground-muted)]">
                       {step.kind === "article" ? (
                         <>
                           <p>{step.summary}</p>
                           {step.highlights.length > 0 && (
-                            <ul className="space-y-1 text-xs text-neutral-400">
+                            <ul className="space-y-1 text-xs text-[color:var(--foreground-muted)]">
                               {step.highlights.map((highlight) => (
                                 <li key={highlight} className="flex items-start gap-2">
-                                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-neutral-600" />
+                                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[color:var(--accent-cool)]" />
                                   <span>{highlight}</span>
                                 </li>
                               ))}
@@ -122,26 +124,26 @@ export function LearningPathSheet({
                       ) : (
                         <div className="space-y-4">
                           {step.questions.map((question) => (
-                            <div key={question.id} className="rounded-lg border border-neutral-800 bg-neutral-950/60 p-3">
-                              <p className="text-sm font-medium text-neutral-100">{question.prompt}</p>
+                            <div key={question.id} className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--ink-soft)] p-3">
+                              <p className="text-sm font-medium text-[color:var(--foreground)]">{question.prompt}</p>
                               {question.choices && (
-                                <ul className="mt-2 space-y-1 text-xs text-neutral-400">
+                                <ul className="mt-2 space-y-1 text-xs text-[color:var(--foreground-muted)]">
                                   {question.choices.map((choice) => (
                                     <li key={choice} className="flex items-start gap-2">
-                                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-purple-500" />
+                                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-teal-500" />
                                       <span>{choice}</span>
                                     </li>
                                   ))}
                                 </ul>
                               )}
-                              <details className="mt-2 text-xs text-neutral-500">
-                                <summary className="cursor-pointer text-neutral-400">Reveal answer</summary>
-                                <p className="mt-1 text-neutral-300">{question.answer}</p>
+                              <details className="mt-2 text-xs text-[color:var(--foreground-muted)]">
+                                <summary className="cursor-pointer text-[color:var(--foreground-muted)]">Reveal answer</summary>
+                                <p className="mt-1 text-[color:var(--foreground-muted)]">{question.answer}</p>
                               </details>
                             </div>
                           ))}
                           {step.impactHints.length > 0 && (
-                            <div className="rounded-lg border border-purple-700/40 bg-purple-950/30 p-3 text-xs text-purple-200">
+                            <div className="rounded-2xl border border-teal-700/40 bg-teal-950/20 p-3 text-xs text-teal-200">
                               <p className="font-semibold uppercase tracking-widest">Impact hints</p>
                               <ul className="mt-2 space-y-1">
                                 {step.impactHints.map((hint) => (
@@ -170,7 +172,7 @@ export function LearningPathSheet({
                         type="button"
                         disabled={updatingStep === step.id}
                         onClick={() => updateStep(step.id, "seen")}
-                        className="inline-flex items-center gap-2 rounded-full border border-neutral-700 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-300 hover:border-neutral-600 disabled:cursor-not-allowed disabled:opacity-70"
+                        className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-[color:var(--foreground)] hover:border-[color:var(--foreground-muted)] disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         Mark seen
                       </button>
@@ -189,7 +191,7 @@ export function LearningPathSheet({
               </div>
             </div>
           ) : (
-            <div className="mt-10 flex items-center justify-center text-sm text-neutral-400">
+            <div className="mt-10 flex items-center justify-center text-sm text-[color:var(--foreground-muted)]">
               Select "Learn" on an outside topic to generate your path.
             </div>
           )}
