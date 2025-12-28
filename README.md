@@ -19,6 +19,19 @@ Local-first intelligence briefings for people who want to stretch beyond their u
 
 ## Setup
 
+### Quickstart (one command)
+
+```bash
+npm run quickstart
+```
+
+This will create `.env.local` if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/migrate/seed, and launch the preview server.
+
+Optional flags:
+- `npm run quickstart -- --skip-docker` to skip Docker Compose.
+- `npm run quickstart -- --skip-preview` to stop after setup.
+- Extra args are forwarded to `npm run preview` (e.g. `--hostname 0.0.0.0 --port 3000`).
+
 1. **Node dependencies**
 
    ```bash

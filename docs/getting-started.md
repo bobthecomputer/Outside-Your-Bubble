@@ -2,6 +2,12 @@
 
 This guide boots a local Outside Your Bubble stack with Postgres, Redis, and optional MailHog for email previews.
 
+## Quickstart (one command)
+```bash
+npm run quickstart
+```
+This creates `.env.local` if needed, starts Docker services, runs Prisma generate/migrate/seed, and launches the preview server.
+
 ## 1) Prerequisites
 - Node.js 20+
 - pnpm or npm
@@ -14,11 +20,11 @@ pnpm install
 ```
 
 ## 3) Configure environment
-- Copy `.env.example` to `.env` and fill in secrets.
+- Copy `.env.example` to `.env.local` (or `.env`) and fill in secrets.
 - For local development you can keep the defaults for Postgres/Redis/MailHog.
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 Key fields to set early:

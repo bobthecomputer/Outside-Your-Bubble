@@ -10,6 +10,7 @@
     "lint": "eslint",
     "prisma:migrate": "prisma migrate dev",
     "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio",
     "ingest:sample": "tsx scripts/ingest-sample.ts",
     "verify:pending": "tsx scripts/verify-pending.ts",
@@ -18,6 +19,7 @@
     "rank:train": "tsx scripts/rank-train.ts",
     "feedback:report": "tsx scripts/feedback-report.ts",
     "preview": "tsx scripts/preview.ts",
+    "quickstart": "tsx scripts/quickstart.ts",
     "dataset:build": "tsx scripts/build-dataset.ts",
     "ingest:run": "tsx scripts/ingest-runner.ts"
   },
