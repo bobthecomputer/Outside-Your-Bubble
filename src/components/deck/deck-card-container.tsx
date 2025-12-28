@@ -11,7 +11,6 @@ import type {
   DeckMode,
   ProfessionalBriefResult,
   StudySuggestionResult,
-  SwipeAction,
 } from "@/types/deck";
 
 type ContextChip = { id: string; label: string; description: string; icon: React.ReactNode };
@@ -22,7 +21,7 @@ type CardAnimation = {
   transition: Record<string, unknown>;
 };
 
-type DeckCardContainerProps = {
+export type DeckCardContainerProps = {
   loading: boolean;
   error: string | null;
   card: DeckCard | null;
@@ -34,12 +33,9 @@ type DeckCardContainerProps = {
   bulletVariants?: Variants;
   prefersReducedMotion: boolean;
   instructionsId: string;
-  onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
   onOpenEvidence: () => void;
   onShareOpen: () => void;
   shareEnabled: boolean;
-  onAction: (action: SwipeAction) => void;
   cardRef?: (node: HTMLElement | null) => void;
   focusTargetSeconds: number;
   focusDashOffset: number;
@@ -80,12 +76,9 @@ export function DeckCardContainer({
   bulletVariants,
   prefersReducedMotion,
   instructionsId,
-  onPointerDown,
-  onPointerUp,
   onOpenEvidence,
   onShareOpen,
   shareEnabled,
-  onAction,
   cardRef,
   focusTargetSeconds,
   focusDashOffset,
@@ -154,12 +147,9 @@ export function DeckCardContainer({
             bulletVariants={bulletVariants}
             prefersReducedMotion={prefersReducedMotion}
             instructionsId={instructionsId}
-            onPointerDown={onPointerDown}
-            onPointerUp={onPointerUp}
             onOpenEvidence={onOpenEvidence}
             onShareOpen={onShareOpen}
             shareEnabled={shareEnabled}
-            onAction={onAction}
             cardRef={cardRef}
             focusTargetSeconds={focusTargetSeconds}
             focusDashOffset={focusDashOffset}

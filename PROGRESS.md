@@ -52,3 +52,4 @@
 - 2025-12-23: Audited the current UI surfaces and deck flow against the roadmap, and drafted a visual/feature gap plan covering a UI refresh, remaining deck refactor splits, ranking integration, and test/onboarding follow-ups.
 - 2025-12-23: Introduced a premium visual system (new fonts, dark/bright palette variables, and non-purple accents) and restyled the deck, learning path sheet, home hero, sign-in screen, site header, and feed cards to match; follow-up: add a light-mode toggle and continue the deck refactor + ranking integration.
 - 2025-12-23: Extracted the deck action bar into a presentational component and wired personalization scoring into deck building using stored user preferences (topics, serendipity, nationality) to prioritize candidates before deduping.
+- 2025-12-23: Continued the deck refactor by introducing a card stack wrapper and controls shell, moving swipe gesture handlers to the stack layer and keeping action controls in a dedicated shell.

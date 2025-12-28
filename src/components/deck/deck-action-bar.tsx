@@ -8,7 +8,7 @@ type DeckActionBarProps = {
 
 export function DeckActionBar({ onAction, disabled }: DeckActionBarProps) {
   return (
-    <div className="mt-8 flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-3">
       {DECK_ACTIONS.map((action) => (
         <DeckActionButton key={action} action={action} onAction={onAction} disabled={disabled} />
       ))}

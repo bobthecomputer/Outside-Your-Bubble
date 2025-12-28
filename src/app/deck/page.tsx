@@ -21,7 +21,8 @@ import { useDeckSwipes } from "@/app/deck/hooks/use-deck-swipes";
 import { defaultPartnerCodes, listBetaPartners } from "@/lib/partners";
 import {
   AchievementToastStack,
-  DeckCardContainer,
+  DeckCardStack,
+  DeckControlsShell,
   DeckHeader,
   EvidenceDialog,
   LearningPathSheet,
@@ -917,55 +918,53 @@ export default function DeckPage() {
           randomSubject={randomSubject}
         />
 
-        <div className="relative">
-          <DeckCardContainer
-            loading={loading}
-            error={error}
-            card={currentCard}
-            contextChips={contextChips}
-            deckMode={deckMode}
-            expanded={expanded}
-            onToggleExpand={toggleExpanded}
-            cardAnimation={cardAnimation}
-            publishedAtText={formatDate(currentCard?.publishedAt)}
-            bulletVariants={bulletVariants}
-            prefersReducedMotion={prefersReducedMotion}
-            instructionsId={instructionsId}
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-            onOpenEvidence={openEvidenceDrawer}
-            onShareOpen={() => setShareOpen(true)}
-            shareEnabled={BETA_SHARE_ENABLED}
-            onAction={handleAction}
-            cardRef={(node) => {
-              cardFocusRef.current = node;
-            }}
-            focusTargetSeconds={focusTargetSeconds}
-            focusDashOffset={focusDashOffset}
-            dwellSeconds={dwellSeconds}
-            dwellProgress={dwellProgress}
-            noteFieldId={noteFieldId}
-            noteHintId={noteHintId}
-            noteValue={noteValue}
-            onNoteChange={handleNoteChange}
-            studyTopic={studyTopic}
-            setStudyTopic={setStudyTopic}
-            studyModel={studyModel}
-            setStudyModel={setStudyModel}
-            studySuggestion={studySuggestion}
-            studyLoading={studyLoading}
-            studyError={studyError}
-            onStudySuggestion={() => handleStudySuggestionRequest().catch(() => undefined)}
-            professionalPersona={professionalPersona}
-            setProfessionalPersona={setProfessionalPersona}
-            professionalModel={professionalModel}
-            setProfessionalModel={setProfessionalModel}
-            professionalBrief={professionalBrief}
-            professionalLoading={professionalLoading}
-            professionalError={professionalError}
-            onProfessionalBrief={() => handleProfessionalBriefRequest().catch(() => undefined)}
-          />
-        </div>
+        <DeckCardStack
+          loading={loading}
+          error={error}
+          card={currentCard}
+          contextChips={contextChips}
+          deckMode={deckMode}
+          expanded={expanded}
+          onToggleExpand={toggleExpanded}
+          cardAnimation={cardAnimation}
+          publishedAtText={formatDate(currentCard?.publishedAt)}
+          bulletVariants={bulletVariants}
+          prefersReducedMotion={prefersReducedMotion}
+          instructionsId={instructionsId}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onOpenEvidence={openEvidenceDrawer}
+          onShareOpen={() => setShareOpen(true)}
+          shareEnabled={BETA_SHARE_ENABLED}
+          cardRef={(node) => {
+            cardFocusRef.current = node;
+          }}
+          focusTargetSeconds={focusTargetSeconds}
+          focusDashOffset={focusDashOffset}
+          dwellSeconds={dwellSeconds}
+          dwellProgress={dwellProgress}
+          noteFieldId={noteFieldId}
+          noteHintId={noteHintId}
+          noteValue={noteValue}
+          onNoteChange={handleNoteChange}
+          studyTopic={studyTopic}
+          setStudyTopic={setStudyTopic}
+          studyModel={studyModel}
+          setStudyModel={setStudyModel}
+          studySuggestion={studySuggestion}
+          studyLoading={studyLoading}
+          studyError={studyError}
+          onStudySuggestion={() => handleStudySuggestionRequest().catch(() => undefined)}
+          professionalPersona={professionalPersona}
+          setProfessionalPersona={setProfessionalPersona}
+          professionalModel={professionalModel}
+          setProfessionalModel={setProfessionalModel}
+          professionalBrief={professionalBrief}
+          professionalLoading={professionalLoading}
+          professionalError={professionalError}
+          onProfessionalBrief={() => handleProfessionalBriefRequest().catch(() => undefined)}
+        />
+        <DeckControlsShell onAction={handleAction} disabled={!currentCard} />
       </main>
 
       <EvidenceDialog

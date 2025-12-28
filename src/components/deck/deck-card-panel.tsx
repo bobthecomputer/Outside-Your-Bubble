@@ -17,16 +17,13 @@ import {
   BriefcaseBusiness,
 } from "lucide-react";
 import Link from "next/link";
-import type React from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 
-import { DeckActionBar } from "@/components/deck";
 import type {
   DeckCard,
   DeckMode,
   ProfessionalBriefResult,
   StudySuggestionResult,
-  SwipeAction,
 } from "@/types/deck";
 
 type ContextChip = { id: string; label: string; description: string; icon: ReactNode };
@@ -49,12 +46,9 @@ type DeckCardPanelProps = {
   bulletVariants?: Variants;
   prefersReducedMotion: boolean;
   instructionsId: string;
-  onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
   onOpenEvidence: () => void;
   onShareOpen: () => void;
   shareEnabled: boolean;
-  onAction: (action: SwipeAction) => void;
   cardRef?: (node: HTMLElement | null) => void;
   focusTargetSeconds: number;
   focusDashOffset: number;
@@ -93,12 +87,9 @@ export function DeckCardPanel({
   bulletVariants,
   prefersReducedMotion,
   instructionsId,
-  onPointerDown,
-  onPointerUp,
   onOpenEvidence,
   onShareOpen,
   shareEnabled,
-  onAction,
   cardRef,
   focusTargetSeconds,
   focusDashOffset,
@@ -133,8 +124,6 @@ export function DeckCardPanel({
       exit={cardAnimation.exit}
       transition={cardAnimation.transition}
       className="relative min-h-[420px] touch-pan-y select-none overflow-hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-xl"
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
       id="deck-panel"
       tabIndex={-1}
       role="group"
@@ -575,7 +564,6 @@ export function DeckCardPanel({
         ))}
       </div>
 
-      <DeckActionBar onAction={onAction} disabled={!card} />
     </motion.article>
   );
 }
