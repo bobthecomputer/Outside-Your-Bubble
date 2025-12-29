@@ -39,7 +39,10 @@ if (skipDb) {
 
 function canRun(command, args) {
   try {
-    const result = spawnSync(command, args, { stdio: "ignore" });
+    const result = spawnSync(command, args, {
+      stdio: "ignore",
+      shell: process.platform === "win32",
+    });
     return result.status === 0;
   } catch {
     return false;
@@ -62,6 +65,7 @@ function runCommand(command, args) {
       cwd: repoRoot,
       stdio: "inherit",
       env: process.env,
+      shell: process.platform === "win32",
     });
     child.on("error", reject);
     child.on("exit", (code) => {
