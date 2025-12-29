@@ -6,7 +6,7 @@ This guide boots a local Outside Your Bubble stack with Postgres, Redis, and opt
 ```bash
 npm run quickstart
 ```
-This creates `.env.local` if needed, starts Docker services, runs Prisma generate/migrate/seed, and launches the preview server.
+This creates `.env.local` if needed, installs dependencies when missing, starts Docker services, runs Prisma generate/migrate/seed, and launches the preview server.
 
 ## 1) Prerequisites
 - Node.js 20+

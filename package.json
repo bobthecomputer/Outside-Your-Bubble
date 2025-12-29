@@ -19,7 +19,7 @@
     "rank:train": "tsx scripts/rank-train.ts",
     "feedback:report": "tsx scripts/feedback-report.ts",
     "preview": "tsx scripts/preview.ts",
-    "quickstart": "tsx scripts/quickstart.ts",
+    "quickstart": "node scripts/quickstart.js",
     "dataset:build": "tsx scripts/build-dataset.ts",
     "ingest:run": "tsx scripts/ingest-runner.ts"
   },

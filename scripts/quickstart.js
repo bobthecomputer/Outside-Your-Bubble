@@ -1,12 +1,7 @@
-import { spawn, spawnSync } from "node:child_process";
-import { copyFileSync, existsSync } from "node:fs";
-import path from "node:path";
-import process from "node:process";
-
-type ComposeCommand = {
-  command: string;
-  prefix: string[];
-};
+const { spawn, spawnSync } = require("node:child_process");
+const { copyFileSync, existsSync } = require("node:fs");
+const path = require("node:path");
+const process = require("node:process");
 
 const repoRoot = path.resolve(__dirname, "..");
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
@@ -16,8 +11,9 @@ let skipDocker = false;
 let skipDb = false;
 let skipSeed = false;
 let skipPreview = false;
+let skipInstall = false;
 let showHelp = false;
-const previewArgs: string[] = [];
+const previewArgs = [];
 
 for (const arg of rawArgs) {
   if (arg === "--skip-docker" || arg === "--no-docker") {
@@ -28,6 +24,8 @@ for (const arg of rawArgs) {
     skipSeed = true;
   } else if (arg === "--skip-preview" || arg === "--no-preview") {
     skipPreview = true;
+  } else if (arg === "--skip-install") {
+    skipInstall = true;
   } else if (arg === "--help" || arg === "-h") {
     showHelp = true;
   } else {
@@ -39,7 +37,7 @@ if (skipDb) {
   skipSeed = true;
 }
 
-function canRun(command: string, args: string[]) {
+function canRun(command, args) {
   try {
     const result = spawnSync(command, args, { stdio: "ignore" });
     return result.status === 0;
@@ -48,7 +46,7 @@ function canRun(command: string, args: string[]) {
   }
 }
 
-function resolveComposeCommand(): ComposeCommand | null {
+function resolveComposeCommand() {
   if (canRun("docker", ["compose", "version"])) {
     return { command: "docker", prefix: ["compose"] };
   }
@@ -58,8 +56,8 @@ function resolveComposeCommand(): ComposeCommand | null {
   return null;
 }
 
-function runCommand(command: string, args: string[]) {
-  return new Promise<void>((resolve, reject) => {
+function runCommand(command, args) {
+  return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: repoRoot,
       stdio: "inherit",
@@ -95,11 +93,25 @@ function ensureEnvFile() {
   console.log("[quickstart] No .env file created (missing .env.example).");
 }
 
+function shouldInstallDeps() {
+  if (skipInstall) {
+    return false;
+  }
+  const nodeModules = path.join(repoRoot, "node_modules");
+  if (!existsSync(nodeModules)) {
+    return true;
+  }
+  const binName = process.platform === "win32" ? "next.cmd" : "next";
+  const nextBin = path.join(nodeModules, ".bin", binName);
+  return !existsSync(nextBin);
+}
+
 function printHelp() {
   console.log(`
 Usage: npm run quickstart -- [options] [preview-args]
 
 Options:
+  --skip-install  Skip npm install when dependencies are missing
   --skip-docker   Skip Docker Compose startup
   --skip-db       Skip Prisma generate/migrate/seed
   --skip-seed     Skip Prisma seed step
@@ -118,6 +130,11 @@ async function main() {
   }
 
   ensureEnvFile();
+
+  if (shouldInstallDeps()) {
+    console.log("[quickstart] Installing dependencies...");
+    await runCommand(npmCommand, ["install"]);
+  }
 
   if (!skipDocker) {
     const compose = resolveComposeCommand();

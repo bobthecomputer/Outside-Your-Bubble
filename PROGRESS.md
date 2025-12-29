@@ -54,3 +54,4 @@
 - 2025-12-23: Extracted the deck action bar into a presentational component and wired personalization scoring into deck building using stored user preferences (topics, serendipity, nationality) to prioritize candidates before deduping.
 - 2025-12-23: Continued the deck refactor by introducing a card stack wrapper and controls shell, moving swipe gesture handlers to the stack layer and keeping action controls in a dedicated shell.
 - 2025-12-28: Added a one-command quickstart script (Docker + Prisma + preview), documented it in onboarding docs, and added a `prisma:seed` script for consistent setup.
+- 2025-12-28: Switched quickstart to a plain Node script (no tsx dependency), added auto-install of npm deps with a `--skip-install` option, and updated docs accordingly to smooth first-run onboarding.

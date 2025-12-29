@@ -26,6 +26,7 @@ npm run quickstart
 ```
 
 This will create `.env.local` if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/migrate/seed, and launch the preview server.
+If dependencies are missing, it will run `npm install` automatically (use `--skip-install` to opt out).
 
 Optional flags:
 - `npm run quickstart -- --skip-docker` to skip Docker Compose.
