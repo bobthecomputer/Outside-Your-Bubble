@@ -39,9 +39,9 @@ if (skipDb) {
 
 function canRun(command, args) {
   try {
-    const result = spawnSync(command, args, {
+    const useCmd = process.platform === "win32";
+    const result = spawnSync(useCmd ? "cmd.exe" : command, useCmd ? ["/d", "/s", "/c", command, ...args] : args, {
       stdio: "ignore",
-      shell: process.platform === "win32",
     });
     return result.status === 0;
   } catch {
@@ -61,11 +61,11 @@ function resolveComposeCommand() {
 
 function runCommand(command, args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+    const useCmd = process.platform === "win32";
+    const child = spawn(useCmd ? "cmd.exe" : command, useCmd ? ["/d", "/s", "/c", command, ...args] : args, {
       cwd: repoRoot,
       stdio: "inherit",
       env: process.env,
-      shell: process.platform === "win32",
     });
     child.on("error", reject);
     child.on("exit", (code) => {
@@ -83,14 +83,23 @@ function ensureEnvFile() {
   const envLocal = path.join(repoRoot, ".env.local");
   const envDefault = path.join(repoRoot, ".env");
 
-  if (existsSync(envLocal) || existsSync(envDefault)) {
+  if (existsSync(envDefault)) {
     console.log("[quickstart] Existing .env file found.");
     return;
   }
 
+  if (existsSync(envLocal)) {
+    copyFileSync(envLocal, envDefault);
+    console.log("[quickstart] Created .env from .env.local.");
+    return;
+  }
+
   if (existsSync(envExample)) {
-    copyFileSync(envExample, envLocal);
-    console.log("[quickstart] Created .env.local from .env.example.");
+    copyFileSync(envExample, envDefault);
+    if (!existsSync(envLocal)) {
+      copyFileSync(envExample, envLocal);
+    }
+    console.log("[quickstart] Created .env (and .env.local) from .env.example.");
     return;
   }
 

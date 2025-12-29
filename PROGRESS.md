@@ -58,3 +58,5 @@
 - 2025-12-28: Hardened the quickstart script on Windows by running shell-spawned commands to avoid `spawn EINVAL` failures during `npm install`.
 - 2025-12-28: Added Windows shell-spawn support to the preview runner to avoid `spawn EINVAL` failures when launching `npm run dev` and sample ingest.
 - 2025-12-28: Standardized Windows command execution for quickstart/preview to call `npm` through the shell (avoiding direct `npm.cmd`) to reduce `spawn EINVAL` errors.
+- 2025-12-28: Updated quickstart to always create `.env` for Prisma CLI, added a cmd.exe fallback for Windows command execution, and aligned onboarding docs with the `.env` requirement.
+- 2025-12-28: Added a Windows one-click PowerShell bootstrapper (`npm run one-click`) that can install Docker Desktop via winget, start services, run Prisma setup, and launch preview for a single-command onboarding flow.

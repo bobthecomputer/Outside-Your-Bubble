@@ -6,7 +6,13 @@ This guide boots a local Outside Your Bubble stack with Postgres, Redis, and opt
 ```bash
 npm run quickstart
 ```
-This creates `.env.local` if needed, installs dependencies when missing, starts Docker services, runs Prisma generate/migrate/seed, and launches the preview server.
+This creates `.env` (and `.env.local`) if needed, installs dependencies when missing, starts Docker services, runs Prisma generate/migrate/seed, and launches the preview server.
+
+## Windows one-click
+```powershell
+npm run one-click
+```
+This runs a PowerShell helper that can install Docker Desktop (via winget), start services, run Prisma setup, and launch the preview server.
 
 ## 1) Prerequisites
 - Node.js 20+
@@ -20,11 +26,11 @@ pnpm install
 ```
 
 ## 3) Configure environment
-- Copy `.env.example` to `.env.local` (or `.env`) and fill in secrets.
+- Copy `.env.example` to `.env` (Prisma uses `.env`) and fill in secrets.
 - For local development you can keep the defaults for Postgres/Redis/MailHog.
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 Key fields to set early:

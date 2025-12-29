@@ -20,6 +20,7 @@
     "feedback:report": "tsx scripts/feedback-report.ts",
     "preview": "tsx scripts/preview.ts",
     "quickstart": "node scripts/quickstart.js",
+    "one-click": "powershell -ExecutionPolicy Bypass -File scripts\\one-click.ps1",
     "dataset:build": "tsx scripts/build-dataset.ts",
     "ingest:run": "tsx scripts/ingest-runner.ts"
   },

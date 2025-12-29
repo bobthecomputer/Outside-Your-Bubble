@@ -25,13 +25,21 @@ Local-first intelligence briefings for people who want to stretch beyond their u
 npm run quickstart
 ```
 
-This will create `.env.local` if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/migrate/seed, and launch the preview server.
-If dependencies are missing, it will run `npm install` automatically (use `--skip-install` to opt out). On Windows, the script uses shell execution to avoid spawn errors.
+This will create `.env` (and `.env.local`) if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/migrate/seed, and launch the preview server.
+If dependencies are missing, it will run `npm install` automatically (use `--skip-install` to opt out). On Windows, the script uses `cmd.exe` to avoid spawn errors.
 
 Optional flags:
 - `npm run quickstart -- --skip-docker` to skip Docker Compose.
 - `npm run quickstart -- --skip-preview` to stop after setup.
 - Extra args are forwarded to `npm run preview` (e.g. `--hostname 0.0.0.0 --port 3000`).
+
+### Windows one-click
+
+```powershell
+npm run one-click
+```
+
+This runs a PowerShell helper that can install Docker Desktop (via winget), start services, run Prisma setup, and launch the preview server.
 
 1. **Node dependencies**
 
@@ -39,10 +47,10 @@ Optional flags:
    npm install
    ```
 
-2. **Environment** – copy and edit your env file.
+2. **Environment** - copy and edit your env file.
 
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
    Minimal local variables:
