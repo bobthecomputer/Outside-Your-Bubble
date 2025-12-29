@@ -56,3 +56,5 @@
 - 2025-12-28: Added a one-command quickstart script (Docker + Prisma + preview), documented it in onboarding docs, and added a `prisma:seed` script for consistent setup.
 - 2025-12-28: Switched quickstart to a plain Node script (no tsx dependency), added auto-install of npm deps with a `--skip-install` option, and updated docs accordingly to smooth first-run onboarding.
 - 2025-12-28: Hardened the quickstart script on Windows by running shell-spawned commands to avoid `spawn EINVAL` failures during `npm install`.
+- 2025-12-28: Added Windows shell-spawn support to the preview runner to avoid `spawn EINVAL` failures when launching `npm run dev` and sample ingest.
+- 2025-12-28: Standardized Windows command execution for quickstart/preview to call `npm` through the shell (avoiding direct `npm.cmd`) to reduce `spawn EINVAL` errors.

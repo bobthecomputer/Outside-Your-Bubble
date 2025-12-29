@@ -4,7 +4,7 @@ const path = require("node:path");
 const process = require("node:process");
 
 const repoRoot = path.resolve(__dirname, "..");
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmCommand = "npm";
 
 const rawArgs = process.argv.slice(2);
 let skipDocker = false;

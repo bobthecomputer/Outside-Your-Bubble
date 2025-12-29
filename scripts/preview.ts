@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import chokidar from "chokidar";
 
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmCommand = "npm";
 const repoRoot = path.resolve(__dirname, "..");
 
 function runIngest() {
@@ -11,6 +11,7 @@ function runIngest() {
     cwd: repoRoot,
     stdio: "inherit",
     env: process.env,
+    shell: process.platform === "win32",
   });
   return child;
 }
@@ -25,6 +26,7 @@ const devServer = spawn(npmCommand, devArgs, {
   cwd: repoRoot,
   stdio: "inherit",
   env: process.env,
+  shell: process.platform === "win32",
 });
 
 let ingestProcess = runIngest();
