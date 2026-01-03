@@ -25,7 +25,7 @@ Local-first intelligence briefings for people who want to stretch beyond their u
 npm run quickstart
 ```
 
-This will create `.env` (and `.env.local`) if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/migrate/seed, and launch the preview server.
+This will create `.env` (and `.env.local`) if needed, start Docker services (Postgres/Redis/MailHog), run Prisma generate/deploy/seed, and launch the preview server.
 If dependencies are missing, it will run `npm install` automatically (use `--skip-install` to opt out). On Windows, the script uses `cmd.exe` to avoid spawn errors.
 
 Optional flags:

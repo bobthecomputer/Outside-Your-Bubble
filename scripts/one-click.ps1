@@ -9,6 +9,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+$script:DockerCommand = $null
+$script:NpmCommand = $null
 
 if ($SkipDb) {
   $SkipSeed = $true
@@ -16,12 +18,16 @@ if ($SkipDb) {
 
 function Invoke-Checked {
   param(
-    [string]$Command,
-    [string[]]$Args
+    [string]$Executable,
+    [string[]]$Arguments
   )
-  & $Command @Args
+  if ($Arguments) {
+    & $Executable @Arguments
+  } else {
+    & $Executable
+  }
   if ($LASTEXITCODE -ne 0) {
-    throw "$Command $($Args -join ' ') failed with exit code $LASTEXITCODE"
+    throw "$Executable $($Arguments -join ' ') failed with exit code $LASTEXITCODE"
   }
 }
 
@@ -53,10 +59,46 @@ function Ensure-EnvFile {
   Write-Host "[one-click] No .env file created (missing .env.example)."
 }
 
+function Resolve-DockerCommand {
+  $dockerCmd = Get-Command docker -ErrorAction SilentlyContinue
+  if ($dockerCmd) {
+    return $dockerCmd.Source
+  }
+
+  $candidatePaths = @(
+    (Join-Path $Env:ProgramFiles "Docker\\Docker\\resources\\bin\\docker.exe"),
+    (Join-Path ${Env:ProgramFiles(x86)} "Docker\\Docker\\resources\\bin\\docker.exe")
+  )
+
+  foreach ($candidate in $candidatePaths) {
+    if ($candidate -and (Test-Path $candidate)) {
+      return $candidate
+    }
+  }
+
+  return $null
+}
+
+function Resolve-NpmCommand {
+  $npmCmd = Get-Command "npm.cmd" -ErrorAction SilentlyContinue
+  if ($npmCmd) {
+    return $npmCmd.Source
+  }
+
+  $npm = Get-Command npm -ErrorAction SilentlyContinue
+  if ($npm) {
+    return $npm.Source
+  }
+
+  return $null
+}
+
 function Ensure-Npm {
-  if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
+  $resolved = Resolve-NpmCommand
+  if (-not $resolved) {
     throw "npm is not available. Install Node.js 20+ and retry."
   }
+  $script:NpmCommand = $resolved
 }
 
 function Install-Dependencies {
@@ -68,7 +110,7 @@ function Install-Dependencies {
   $nextBin = Join-Path $nodeModules ".bin\\next.cmd"
   if (-not (Test-Path $nodeModules) -or -not (Test-Path $nextBin)) {
     Write-Host "[one-click] Installing dependencies..."
-    Invoke-Checked "npm" @("install")
+    Invoke-Checked $script:NpmCommand @("install")
   }
 }
 
@@ -77,8 +119,12 @@ function Ensure-Docker {
     return
   }
 
-  $dockerCmd = Get-Command docker -ErrorAction SilentlyContinue
-  if (-not $dockerCmd) {
+  $resolved = Resolve-DockerCommand
+  if ($resolved) {
+    $script:DockerCommand = $resolved
+  }
+
+  if (-not $script:DockerCommand) {
     if ($NoInstallDocker) {
       throw "Docker not found. Install Docker Desktop or rerun with -SkipDocker and provide your own Postgres."
     }
@@ -89,7 +135,24 @@ function Ensure-Docker {
     }
 
     Write-Host "[one-click] Installing Docker Desktop via winget..."
-    Invoke-Checked "winget" @("install", "-e", "--id", "Docker.DockerDesktop", "--accept-package-agreements", "--accept-source-agreements")
+    Invoke-Checked "winget" @(
+      "install",
+      "-e",
+      "--id",
+      "Docker.DockerDesktop",
+      "--accept-package-agreements",
+      "--accept-source-agreements",
+      "--disable-interactivity"
+    )
+  }
+
+  if (-not $script:DockerCommand) {
+    $resolved = Resolve-DockerCommand
+    if ($resolved) {
+      $script:DockerCommand = $resolved
+    } else {
+      throw "Docker CLI not found after installation. Close and reopen your terminal, or run -SkipDocker with a local Postgres."
+    }
   }
 
   $dockerDesktop = Join-Path $Env:ProgramFiles "Docker\\Docker\\Docker Desktop.exe"
@@ -102,7 +165,7 @@ function Ensure-Docker {
 
   $ready = $false
   for ($i = 0; $i -lt 60; $i++) {
-    & docker info *> $null
+    & $script:DockerCommand info *> $null
     if ($LASTEXITCODE -eq 0) {
       $ready = $true
       break
@@ -115,7 +178,7 @@ function Ensure-Docker {
   }
 
   Write-Host "[one-click] Starting Docker services (postgres, redis, mailhog)..."
-  Invoke-Checked "docker" @("compose", "up", "-d", "postgres", "redis", "mailhog")
+  Invoke-Checked $script:DockerCommand @("compose", "up", "-d", "postgres", "redis", "mailhog")
 }
 
 function Setup-Database {
@@ -123,12 +186,12 @@ function Setup-Database {
     return
   }
   Write-Host "[one-click] Generating Prisma client..."
-  Invoke-Checked "npm" @("run", "prisma:generate")
-  Write-Host "[one-click] Running Prisma migrations..."
-  Invoke-Checked "npm" @("run", "prisma:migrate")
+  Invoke-Checked $script:NpmCommand @("run", "prisma:generate")
+  Write-Host "[one-click] Applying Prisma migrations..."
+  Invoke-Checked $script:NpmCommand @("run", "prisma:deploy")
   if (-not $SkipSeed) {
     Write-Host "[one-click] Seeding database..."
-    Invoke-Checked "npm" @("run", "prisma:seed")
+    Invoke-Checked $script:NpmCommand @("run", "prisma:seed")
   }
 }
 
@@ -139,7 +202,7 @@ function Start-Preview {
   }
 
   Write-Host "[one-click] Starting preview..."
-  Invoke-Checked "npm" @("run", "preview")
+  Invoke-Checked $script:NpmCommand @("run", "preview")
 }
 
 Push-Location $RepoRoot

@@ -162,8 +162,8 @@ async function main() {
   if (!skipDb) {
     console.log("[quickstart] Generating Prisma client...");
     await runCommand(npmCommand, ["run", "prisma:generate"]);
-    console.log("[quickstart] Running Prisma migrations...");
-    await runCommand(npmCommand, ["run", "prisma:migrate"]);
+    console.log("[quickstart] Applying Prisma migrations...");
+    await runCommand(npmCommand, ["run", "prisma:deploy"]);
     if (!skipSeed) {
       console.log("[quickstart] Seeding database...");
       await runCommand(npmCommand, ["run", "prisma:seed"]);

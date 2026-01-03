@@ -60,3 +60,7 @@
 - 2025-12-28: Standardized Windows command execution for quickstart/preview to call `npm` through the shell (avoiding direct `npm.cmd`) to reduce `spawn EINVAL` errors.
 - 2025-12-28: Updated quickstart to always create `.env` for Prisma CLI, added a cmd.exe fallback for Windows command execution, and aligned onboarding docs with the `.env` requirement.
 - 2025-12-28: Added a Windows one-click PowerShell bootstrapper (`npm run one-click`) that can install Docker Desktop via winget, start services, run Prisma setup, and launch preview for a single-command onboarding flow.
+- 2025-12-28: Hardened the one-click PowerShell bootstrapper with Docker CLI path resolution, post-install verification, and non-interactive winget flags to reduce Windows setup failures.
+- 2025-12-28: Fixed one-click command execution on Windows by renaming the argument parameter (avoid PowerShell `$args` collisions) so docker/winget/npm receive their arguments correctly.
+- 2025-12-28: Updated the one-click bootstrapper to call `npm.cmd` directly on Windows to avoid PowerShell wrapper parameter binding issues during `npm run` steps.
+- 2025-12-28: Switched quickstart/one-click migrations to `prisma migrate deploy` (non-interactive) to avoid prompts during first-run onboarding, and added a `prisma:deploy` script.
